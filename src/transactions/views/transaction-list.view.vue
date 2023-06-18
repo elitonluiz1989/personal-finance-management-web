@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TransactionForm from "../components/actions/transactions-form.component.vue";
+import TransactionForm from "../components/form/transactions-form.component.vue";
 </script>
 
 <template>
