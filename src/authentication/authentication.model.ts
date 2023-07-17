@@ -12,7 +12,12 @@ export class AuthenticationInfo {
   }
 
   get isExpired(): boolean {
-    if (this.expires == undefined || this.expires === null) return true;
+    if (
+      this.expires == undefined ||
+      this.expires === null ||
+      !(this.expires instanceof Date)
+    )
+      return true;
 
     return this.expires.getTime() < Date.now();
   }

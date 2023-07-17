@@ -6,4 +6,6 @@ export const AppResources = {
   save: "Save",
   reset: "Reset",
   close: "Close",
+  edit: "Edit",
+  remove: "Remove",
 };

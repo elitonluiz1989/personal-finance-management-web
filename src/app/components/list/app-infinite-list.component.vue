@@ -25,17 +25,12 @@ const props = withDefaults(defineProps<AppFormComboboxProps>(), {
 watch(
   () => props.search,
   async (value) => {
-    console.log(page);
     if (value) {
       let result = await props.action(page);
-
-      console.log(result);
 
       if (Array.isArray(result) === false) result = [];
 
       items.value = result;
-
-      console.log(items.value);
     }
   }
 );

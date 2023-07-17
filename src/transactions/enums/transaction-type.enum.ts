@@ -1,4 +1,5 @@
 import { AppResources } from "@/app/app.resoures";
+import { FinanceTypeEnum } from "@/app/enums/finance-type.enum";
 import { IIndexable, KeyValue } from "@/app/types";
 
 export enum TransactionTypeEnum {
@@ -22,4 +23,14 @@ export function toKeyValue(): KeyValue<string, TransactionTypeEnum>[] {
   }
 
   return values;
+}
+
+export function toFinanceTypeEnum(
+  value: TransactionTypeEnum | undefined
+): FinanceTypeEnum | undefined {
+  if (value === TransactionTypeEnum.credit) return FinanceTypeEnum.credit;
+
+  if (value === TransactionTypeEnum.debt) return FinanceTypeEnum.debt;
+
+  return undefined;
 }

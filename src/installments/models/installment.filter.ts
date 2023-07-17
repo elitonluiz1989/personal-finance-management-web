@@ -10,8 +10,10 @@ export class InstallmentFilter extends Filter {
   public balanceType: BalanceTypeEnum | null = null;
   public reference = 0;
   public number = 0;
-  public status: InstallmentStatusEnum | null = null;
+  public status: InstallmentStatusEnum[] = [];
   public amount = 0;
   public appendData = false;
   public installmentToAddAtTransaction = false;
+  public onlyUnpaidInstallments = false;
+  public withoutTheseInstallmentIds: number[] = [];
 }

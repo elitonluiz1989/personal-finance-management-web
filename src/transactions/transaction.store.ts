@@ -3,8 +3,9 @@ import axios from "axios";
 import { Module } from "vuex";
 import { Transaction } from "./models/transaction.model";
 import { TransactionStore } from "./transaction.types";
-import { TransactionsStoreStrings as Resources } from "./transactions.resources";
+import { TransactionsStoreStrings as Strings } from "./transactions.strings";
 import { TransactionStoreDto } from "./models/transaction-store.dto";
+import { PagedResultsDto } from "@/app/models/paged-results.dto";
 
 export const transactions: Module<TransactionStore, State> = {
   namespaced: true,
@@ -14,15 +15,19 @@ export const transactions: Module<TransactionStore, State> = {
   },
 
   getters: {
-    [Resources.getterTransaction.value](
-      state: TransactionStore
-    ): Transaction[] {
+    [Strings.getterTransactions.value](state: TransactionStore): Transaction[] {
       return state.transactions ?? [];
+    },
+    [Strings.getterTransaction.value](
+      state: TransactionStore
+    ): (id: number) => Transaction | undefined {
+      return (id: number): Transaction | undefined =>
+        state.transactions.find((t) => t.id === id);
     },
   },
 
   mutations: {
-    [Resources.setterAddTransactions.value](
+    [Strings.setterAddTransactions.value](
       state: TransactionStore,
       payload: Transaction[]
     ) {
@@ -39,7 +44,7 @@ export const transactions: Module<TransactionStore, State> = {
       }
     },
 
-    [Resources.setterAddTransaction.value](
+    [Strings.setterAddTransaction.value](
       state: TransactionStore,
       payload: Transaction
     ) {
@@ -55,29 +60,38 @@ export const transactions: Module<TransactionStore, State> = {
   },
 
   actions: {
-    async [Resources.actionList.value](
-      { commit },
-      payload: any
-    ): Promise<void> {
-      const result = await axios.get<Transaction>("/Transactions", payload);
-      const transactions = result?.data ?? [];
+    async [Strings.actionList.value]({ commit }, payload: any): Promise<void> {
+      const result = await axios.get<PagedResultsDto<Transaction[]>>(
+        "/Transactions",
+        payload
+      );
+      const transactions = result?.data?.results ?? [];
 
-      commit(Resources.setterAddTransactions.value, transactions);
+      commit(Strings.setterAddTransactions.value, transactions);
     },
 
-    async [Resources.actionAdd.value](
+    async [Strings.actionAdd.value](
       { commit, dispatch },
       payload: TransactionStoreDto
     ): Promise<void> {
       const result = await axios.post<Transaction>("/Transactions", payload);
 
       if (!result.data) {
-        dispatch(Resources.actionList.namespaced);
+        dispatch(Strings.actionList.namespaced);
 
         return;
       }
 
-      commit(Resources.setterAddTransaction.value, result.data);
+      commit(Strings.setterAddTransaction.value, result.data);
+    },
+
+    async [Strings.actionFindAction.value](
+      { commit },
+      payload: number
+    ): Promise<void> {
+      const result = await axios.get<Transaction>(`/Transactions/${payload}`);
+
+      commit(Strings.setterAddTransaction.value, result?.data);
     },
   },
 };

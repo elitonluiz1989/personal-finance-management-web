@@ -7,16 +7,16 @@ import {
   watch,
   withDefaults,
 } from "vue";
-import { IAppModalFooterProps } from "./types";
-import AppModalHeader from "./app-modal-header.component.vue";
 import AppModalFooter from "./app-modal-footer.compenent.vue";
+import AppModalHeader from "./app-modal-header.component.vue";
+import { IAppModalFooterProps } from "./types";
 
 type AppModalProps = {
-  id?: string | null;
+  id?: string;
   title: string;
   show: boolean;
-  isForm: boolean;
-  footer: IAppModalFooterProps;
+  isForm?: boolean;
+  footer?: IAppModalFooterProps;
 };
 type AppModalEmits = {
   (e: "onClose", show: boolean): void;
@@ -25,43 +25,44 @@ type AppModalEmits = {
 };
 
 const props = withDefaults(defineProps<AppModalProps>(), {
-  id: null,
+  id: "",
   show: false,
   isForm: false,
 });
-const show = ref(false);
+const showModal = ref(false);
 const labelId = `${props.id}-label`;
 
 const modalCssStyles = computed(() => ({
-  "modal fade show": show.value,
-  "modal fade": show.value === false,
+  "modal fade show": showModal.value,
+  "modal fade": showModal.value === false,
 }));
 const modalDropCssStyles = computed(() => ({
-  "modal-backdrop fade show": show.value,
-  "modal-backdrop fade": show.value === false,
+  "modal-backdrop fade show": showModal.value,
+  "modal-backdrop fade": showModal.value === false,
 }));
+const modalId = computed(() => props.id ?? "");
 
 watch(
   () => props.show,
   (value: boolean) => {
-    show.value = value;
+    showModal.value = value;
   }
 );
 
 const emits = defineEmits<AppModalEmits>();
 
-const closeModal = () => {
-  show.value = false;
+const onClose = () => {
+  showModal.value = false;
 
   emits("onClose", false);
 };
-const submitForm = (evt: Event) => emits("onSave", evt);
-const resetForm = (evt: Event) => emits("onReset", evt);
+const onReset = (evt: Event) => emits("onReset", evt);
+const onSave = (evt: Event) => emits("onSave", evt);
 </script>
 
 <template>
   <div
-    :id="props.id"
+    :id="modalId"
     :class="modalCssStyles"
     tabindex="-1"
     role="dialog"
@@ -70,11 +71,11 @@ const resetForm = (evt: Event) => emits("onReset", evt);
   >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <form v-if="props.isForm" @submit="submitForm" @reset="resetForm">
+        <form v-if="props.isForm" @submit="onSave" @reset="onReset">
           <AppModalHeader
             :title="props.title"
             :label-id="labelId"
-            @trigger-on-close="closeModal"
+            @trigger-on-close="onClose"
           />
 
           <div class="modal-body">
@@ -83,10 +84,13 @@ const resetForm = (evt: Event) => emits("onReset", evt);
 
           <AppModalFooter
             :is-form="true"
+            :show-save-button="props.footer?.showSaveButton"
             :save-text="props.footer?.saveText"
+            :show-reset-button="props.footer?.showResetButton"
             :reset-text="props.footer?.resetText"
+            :show-dismiss-button="props.footer?.showDismissButton"
             :dismiss-text="props.footer?.dismissText"
-            @trigger-on-close="closeModal"
+            @trigger-on-close="onClose"
           />
         </form>
 
@@ -94,7 +98,7 @@ const resetForm = (evt: Event) => emits("onReset", evt);
           <AppModalHeader
             :title="props.title"
             :label-id="labelId"
-            @trigger-on-close="closeModal"
+            @trigger-on-close="onClose"
           />
 
           <div class="modal-body">
@@ -103,10 +107,14 @@ const resetForm = (evt: Event) => emits("onReset", evt);
 
           <AppModalFooter
             :is-form="false"
+            :show-save-button="props.footer?.showSaveButton"
             :save-text="props.footer?.saveText"
+            :show-reset-button="props.footer?.showResetButton"
             :reset-text="props.footer?.resetText"
+            :show-dismiss-button="props.footer?.showDismissButton"
             :dismiss-text="props.footer?.dismissText"
-            @trigger-on-close="closeModal"
+            @on-close="onClose"
+            @on-save="onSave"
           />
         </template>
       </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import {
   defineEmits,
   defineProps,
@@ -41,7 +41,6 @@ onMounted(() => {
 });
 
 watch(scrollContentRef, (value) => {
-  console.log(value?.scrollHeight);
   if (scrollContentHeight.value == 0)
     scrollContentHeight.value = value?.scrollHeight ?? 0;
 });

@@ -4,8 +4,8 @@ import { FormFields } from "./form-fields.model";
 
 export abstract class FormService<TFormFields extends FormFields> {
   protected _formFields!: TFormFields;
-  protected _submitHandler!: FormSubmitHandler<TFormFields>;
   protected _validateService!: ValidationService<TFormFields>;
+  protected _beforeSubmitHandler: (() => void) | undefined;
 
   constructor() {
     this.initialize();

@@ -1,43 +1,35 @@
 <script setup lang="ts">
 import { AppResources } from "@/app/app.resoures";
 import { computed, withDefaults, defineProps, defineEmits } from "vue";
-import { IAppModalFooterProps } from "./types";
 
 type AppModalFooterProps = {
   isForm: boolean;
+  showSaveButton: boolean;
   saveText?: string;
+  showResetButton: boolean;
   resetText?: string;
+  showDismissButton: boolean;
   dismissText?: string;
 };
 type AppModalFooterEmits = {
-  (e: "triggerOnClose"): void;
+  (e: "onClose"): void;
+  (e: "onSave", evt: Event): void;
 };
 
 const props = withDefaults(defineProps<AppModalFooterProps>(), {
   isForm: false,
-});
-
-const defaultFooterConfigs: IAppModalFooterProps = {
-  show: false,
+  showSaveButton: true,
   saveText: AppResources.save,
+  showResetButton: false,
   resetText: AppResources.reset,
+  showDismissButton: true,
   dismissText: AppResources.close,
-};
-
-const saveText = computed(
-  () => props.saveText ?? defaultFooterConfigs.saveText
-);
-const resetText = computed(
-  () => props.resetText ?? defaultFooterConfigs.resetText
-);
-const dismissText = computed(
-  () => props.dismissText ?? defaultFooterConfigs.dismissText
-);
-const saveButtonType = computed(() => (props.isForm ? "submit" : "button"));
+});
 
 const emits = defineEmits<AppModalFooterEmits>();
 
-const closeModal = () => emits("triggerOnClose");
+const closeModal = () => emits("onClose");
+const onSave = (evt: Event) => emits("onSave", evt);
 </script>
 
 <template>
@@ -47,20 +39,27 @@ const closeModal = () => emits("triggerOnClose");
       class="btn btn-secondary"
       data-dismiss="modal"
       @click="closeModal"
+      v-if="props.showDismissButton"
     >
-      {{ dismissText }}
+      {{ props.dismissText }}
     </button>
 
     <button
       type="reset"
       class="btn btn-outline-secondary"
-      v-show="props.isForm"
+      v-if="props.showResetButton"
     >
-      {{ resetText }}
+      {{ props.resetText }}
     </button>
 
-    <button :type="saveButtonType" class="btn btn-success">
-      {{ saveText }}
-    </button>
+    <template v-if="props.showSaveButton">
+      <button type="submit" class="btn btn-success" v-if="props.isForm">
+        {{ props.saveText }}
+      </button>
+
+      <button type="button" class="btn btn-success" @click="onSave" v-else>
+        {{ props.saveText }}
+      </button>
+    </template>
   </div>
 </template>

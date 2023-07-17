@@ -5,6 +5,8 @@ import { InstallmentFilter } from "@/installments/models/installment.filter";
 import { User } from "@/users/user.model";
 import { UsersResoures } from "@/users/users.resources";
 import { TransactionFormFields } from "./models/transaction-form-fields.model";
+import { Transaction } from "./models/transaction.model";
+import { TransactionsStoreStrings as StoreStrings } from "./transactions.strings";
 
 export class TransactionStateService {
   public static async getUsers(): Promise<User[]> {
@@ -16,7 +18,17 @@ export class TransactionStateService {
     );
   }
 
-  public static async list(
+  public static async findTransaction(
+    id: number
+  ): Promise<Transaction | undefined> {
+    return StoreHelper.getWithParameters<Transaction | undefined, number>(
+      StoreStrings.getterTransaction.namespaced,
+      id,
+      undefined
+    );
+  }
+
+  public static async listInstallments(
     fields: TransactionFormFields,
     page: number
   ): Promise<void> {
@@ -27,6 +39,9 @@ export class TransactionStateService {
     filter.appendData = true;
     filter.withoutPagination = false;
     filter.installmentToAddAtTransaction = true;
+    filter.onlyUnpaidInstallments = true;
+    filter.withoutTheseInstallmentIds =
+      fields.installments.value?.map((i) => i.id) ?? [];
 
     await StoreHelper.dispatch(
       InstallmentsResources.store.actions.list.namespaced,

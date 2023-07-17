@@ -1,10 +1,10 @@
 import { Installment } from "@/installments/installment.model";
-import { TransactionsFormStrings as FormStrings } from "../transactions.resources";
+import { TransactionsFormStrings as FormStrings } from "../transactions.strings";
 import { extractDateFormDateTime } from "@/app/helpers/helpers";
 import { FormField } from "@/app/services/form/form-field.model";
 import { FormFields } from "@/app/services/form/form-fields.model";
 import { Transaction } from "./transaction.model";
-import { TransactionTypeEnum } from "../transaction-type.enum";
+import { TransactionTypeEnum } from "../enums/transaction-type.enum";
 import { TransactionStoreDto } from "./transaction-store.dto";
 
 export class TransactionFormFields extends FormFields {
@@ -34,18 +34,20 @@ export class TransactionFormFields extends FormFields {
     this.fillFieldsList();
   }
 
-  public createTransaction(): Transaction {
-    const transaction = new Transaction();
+  public populate(transaction: Transaction): void {
+    this.id.model.value = transaction.id;
+    this.date.model.value = extractDateFormDateTime(transaction.date);
+    this.amount.model.value = transaction.amount;
+    this.userId.model.value = transaction.userId;
+    this.type.model.value = transaction.type;
 
-    if (this.id.value > 0) transaction.id = this.id.value;
+    if (transaction.items?.length === 0) return;
 
-    transaction.date = new Date(this.date.value);
-    transaction.amount = +this.amount.value;
-    transaction.userId = +this.userId.value;
-    transaction.type = +this.type.value as TransactionTypeEnum;
-    transaction.installments = this.installments.value.map((i) => i.id);
+    for (const item of transaction.items) {
+      if (!item.installment) continue;
 
-    return transaction;
+      this.installments.value.push(item.installment);
+    }
   }
 
   public createStoreDto(): TransactionStoreDto {

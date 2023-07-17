@@ -11,7 +11,13 @@ export class TransactionsFormStrings {
   public static type = "Type";
   public static installments = "Installments";
 
+  public static addTransaction = "Add transaction";
   public static loadMore = "Load more";
+  public static amoutSelectedInstallments = "Amount of selected installments:";
+  public static transactionNotFound = "Trasanction not found";
+  public static addInstallments = "Add installments";
+  public static amountAvailableToSelect = (amount: string) =>
+    `Amount avaliable to select: ${amount}`;
 }
 
 export class TransactionsStoreStrings {

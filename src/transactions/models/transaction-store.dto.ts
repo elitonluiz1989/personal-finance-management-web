@@ -1,4 +1,4 @@
-import { TransactionTypeEnum } from "../transaction-type.enum";
+import { TransactionTypeEnum } from "../enums/transaction-type.enum";
 
 export class TransactionStoreDto {
   public id = 0;

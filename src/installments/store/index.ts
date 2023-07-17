@@ -1,3 +1,5 @@
+import { queryParamsParse } from "@/app/helpers/helpers";
+import { PagedResultsDto } from "@/app/models/paged-results.dto";
 import { StoreHelper } from "@/app/store/store.helper";
 import { State } from "@/app/store/types";
 import axios from "axios";
@@ -5,9 +7,8 @@ import { Module } from "vuex";
 import { Installment } from "../installment.model";
 import { InstallmentsResources } from "../installments.resources";
 import { InstallmentFilter } from "../models/installment.filter";
-import { InstallmentsState } from "./type";
-import { PagedResultsDto } from "@/app/models/paged-results.dto";
 import { PaginationDto } from "./../../app/models/pagination.dto";
+import { InstallmentsState } from "./type";
 
 export const installments: Module<InstallmentsState, State> = {
   namespaced: true,
@@ -58,13 +59,10 @@ export const installments: Module<InstallmentsState, State> = {
       payload: InstallmentFilter
     ) {
       const result = await axios.get<PagedResultsDto<Installment>>(
-        "/Installments",
-        {
-          params: payload,
-        }
+        `/Installments${queryParamsParse(payload)}`
       );
 
-      let installments: Installment[] = result.data.results ?? [];
+      let installments: Installment[] = result?.data?.results ?? [];
 
       if (payload.appendData) {
         const currentInstallments = StoreHelper.get<Installment[]>(

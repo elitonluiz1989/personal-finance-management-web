@@ -1,4 +1,3 @@
-import { isArray } from "@vue/shared";
 import { IIndexable, StoreResourcesItem } from "../types";
 
 function hasKey<T extends object>(obj: T, key: PropertyKey): key is keyof T {
@@ -27,7 +26,7 @@ export function mapFrom<
   for (const key in source) {
     if (hasKey(target, key) === false) continue;
 
-    if (isArray(target[key])) {
+    if (Array.isArray(target[key])) {
       (target[key] as any) = source[key];
 
       continue;
@@ -110,6 +109,36 @@ export function getEventTarget<T extends EventTarget>(evt: Event): T {
   return target as T;
 }
 
-export function extractDateFormDateTime(date: Date): string {
-  return date.toISOString().split("T")[0];
+export function extractDateFormDateTime(date: Date | undefined): string {
+  if (!date) return "";
+
+  const rawDate = isString(date) ? new Date(date) : date;
+
+  return rawDate.toISOString().split("T")[0];
+}
+
+export function queryParamsParse<TRequest>(request: TRequest): string {
+  let key: keyof typeof request;
+  let param: TRequest[keyof TRequest];
+  const params: string[] = [];
+
+  for (key in request) {
+    param = request[key];
+
+    if (Array.isArray(param)) {
+      for (const value of param) {
+        params.push(`${key.toString()}=${value}`);
+      }
+
+      continue;
+    }
+
+    params.push(`${key.toString()}=${param}`);
+  }
+
+  return `?${params.join("&")}`;
+}
+
+export function arraySum<T>(arr: T[], valorToAggrate: (item: T) => number) {
+  return arr.reduce((agg, item) => agg + valorToAggrate(item), 0);
 }

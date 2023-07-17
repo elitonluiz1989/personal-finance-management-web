@@ -1,17 +1,17 @@
 <script setup lang="ts">
+import AppBadge from "@/app/components/bagde/app-badge.component.vue";
 import { BootstrapColorsEnum } from "@/app/enums/BootstrapColorsEnum.enum";
-import { CurrencyFormatterStatic } from "@/app/helpers/currency-formatter";
+import InstallmentBadge from "@/installments/components/installment-badge.component.vue";
 import { Installment } from "@/installments/installment.model";
 import { computed, defineEmits, defineProps, ref, withDefaults } from "vue";
-import AppBadge from "@/app/components/bagde/app-badge.component.vue";
-import InstallmentBadge from "@/installments/components/installment-badge.component.vue";
 
 type TransactionsFormInstallmentPropsType = {
   installment: Installment;
   allowSelection: boolean;
 };
 type TransactionsFormInstallmentEmitsType = {
-  (e: "onSelectInstallment", installment: Installment): void;
+  (e: "onAddInstallment", installment: Installment): void;
+  (e: "onRemoveInstallment", installment: Installment): void;
 };
 
 const selected = ref<boolean>(false);
@@ -24,12 +24,10 @@ const props = withDefaults(
 );
 const emits = defineEmits<TransactionsFormInstallmentEmitsType>();
 
-const installmentNumberDescription = `${props.installment.number}/${props.installment.balance?.installmentsNumber}`;
-
 const cssStyles = computed(() => ({
-  "btn btn-outline-secondary d-flex flex-row justify-content-between p-2 w-100 selected":
+  "btn btn-outline-secondary d-flex flex-row align-items-center p-2 w-100 selected":
     selected.value,
-  "btn btn-outline-secondary d-flex flex-row justify-content-between p-2 w-100":
+  "btn btn-outline-secondary d-flex flex-row align-items-center p-2 w-100":
     selected.value === false,
 }));
 
@@ -37,7 +35,7 @@ const select = () => {
   if (selected.value) {
     selected.value = false;
 
-    emits("onSelectInstallment", props.installment);
+    emits("onRemoveInstallment", props.installment);
 
     return;
   }
@@ -46,31 +44,43 @@ const select = () => {
 
   selected.value = true;
 
-  emits("onSelectInstallment", props.installment);
+  emits("onAddInstallment", props.installment);
 };
 </script>
 
 <template>
   <button :class="cssStyles" @click.prevent="select()">
-    <div>
-      <span class="fw-bolder me-2">
-        {{ props.installment.balance?.name }}
-      </span>
-
-      <AppBadge
-        :color="BootstrapColorsEnum.primary"
-        :text="installmentNumberDescription"
-      />
-
-      <span class="ms-2">
-        {{ CurrencyFormatterStatic.format(installment.amount) }}
-      </span>
+    <div
+      class="d-flex col-auto align-items-center p-2 border-end border-secondary"
+    >
+      {{ props.installment.numberDescriptionHandler() }}
     </div>
 
-    <InstallmentBadge
-      :status="installment.status"
-      :description="installment.statusDescription"
-    />
+    <div class="col">
+      <div class="text-start mx-2">
+        <span class="fw-bolder" :title="props.installment.balance?.name">
+          {{ props.installment.balance?.name }}
+        </span>
+      </div>
+
+      <div class="text-start mx-2">
+        <AppBadge
+          :color="BootstrapColorsEnum.secondary"
+          :text="props.installment.referenceFormatted"
+        />
+
+        <span class="ms-2">
+          {{ props.installment.amountHandler() }}
+        </span>
+      </div>
+    </div>
+
+    <div class="col-auto p-2 border-start border-secondary">
+      <InstallmentBadge
+        :status="props.installment.status"
+        :description="props.installment.statusDescription"
+      />
+    </div>
   </button>
 </template>
 
@@ -78,13 +88,28 @@ const select = () => {
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 
-.selected {
+%btn-hover-rules {
+  & div {
+    border-color: white !important;
+  }
+}
+
+%selected-rules {
   background-color: $secondary;
   color: white;
+}
+
+.btn-outline-secondary:hover {
+  @extend %btn-hover-rules;
+}
+
+.selected {
+  @extend %selected-rules;
 
   &:hover {
-    background-color: $secondary;
-    color: white;
+    @extend %selected-rules;
   }
+
+  @extend %btn-hover-rules;
 }
 </style>

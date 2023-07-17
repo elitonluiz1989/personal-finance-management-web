@@ -14,6 +14,8 @@ import {
   faCaretUp as fasCaretUp,
   faPlus as fasPLus,
   faPen as fasPen,
+  faCircle as fasCircle,
+  faCircleExclamation as fasCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -23,7 +25,9 @@ library.add(
   fasTrashCan,
   fasCaretUp,
   fasPLus,
-  fasPen
+  fasPen,
+  fasCircle,
+  fasCircleExclamation
 );
 
 createApp(App).use(store, storeKey).use(router).mount("#app");

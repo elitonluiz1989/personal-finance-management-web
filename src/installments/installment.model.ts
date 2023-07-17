@@ -2,6 +2,7 @@ import { mapFrom } from "@/app/helpers/helpers";
 import { IIndexable } from "@/app/types";
 import { InstallmentStatusEnum } from "./installment-status.enum";
 import { BalanceSimplified } from "./../balances/models/balance-simplified.model";
+import { CurrencyFormatterStatic } from "@/app/helpers/currency-formatter";
 
 export class Installment {
   public id = 0;
@@ -12,9 +13,24 @@ export class Installment {
   public status: InstallmentStatusEnum = InstallmentStatusEnum.created;
   public statusDescription = "";
   public amount = 0;
+  public amountPaid = 0;
+  public amountRemaining = 0;
   public deletedAt: Date | undefined = undefined;
   public active = false;
   public balance: BalanceSimplified | undefined = undefined;
+
+  public numberDescriptionHandler(): string {
+    return `${this.number}/${this.balance?.installmentsNumber}`;
+  }
+
+  public amountHandler = (): string => {
+    let amount = this.amount;
+
+    if (this.status == InstallmentStatusEnum.partiallyPaid)
+      amount = this.amountRemaining;
+
+    return CurrencyFormatterStatic.format(amount);
+  };
 
   public static castList<T extends IIndexable<any>>(data: T[]): Installment[] {
     const installments: Installment[] = [];

@@ -2,10 +2,10 @@ import { IIndexable } from "@/app/types";
 
 export interface IAppModalFooterProps
   extends IIndexable<boolean | string | null> {
-  show: boolean;
+  showSaveButton?: boolean;
   saveText?: string;
+  showResetButton?: boolean;
   resetText?: string;
+  showDismissButton?: boolean;
   dismissText?: string;
 }
-
-export type AppModalFooterProps = IAppModalFormProps & IAppModalFooterProps;

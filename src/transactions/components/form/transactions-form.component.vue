@@ -3,56 +3,42 @@ import AppFormInputCurrency from "@/app/components/form/input-curreny/app-form-i
 import AppModal from "@/app/components/modal/app-modal.component.vue";
 import AppValidationMessages from "@/app/components/validation-messages/app-validation-messages.component.vue";
 import { Installment } from "@/installments/installment.model";
-import {
-  computed,
-  defineEmits,
-  defineExpose,
-  defineProps,
-  onMounted,
-  withDefaults,
-} from "vue";
-import { TransactionsFormStrings as FormStrings } from "../../transactions.resources";
+import { computed, defineExpose, onMounted } from "vue";
+import { TransactionsFormStrings as FormStrings } from "../../transactions.strings";
 import TransactionsFormInstallments from "./installments/transactions-form-installments.component.vue";
-import { TransactionsFormEventsService } from "./services/transaction-form-events.service";
+import { TransactionsFormEventsService } from "./services/transactions-form-events.service";
 import { TransactionsFormService } from "./services/transactions-form.service";
-
-type TransactionsFormProps = {
-  showAddButton?: boolean;
-};
-type TransactionFormEmits = {
-  (e: "onClose"): void;
-};
-
-const props = withDefaults(defineProps<TransactionsFormProps>(), {
-  showAddButton: true,
-});
-const emits = defineEmits<TransactionFormEmits>();
+import { arraySum } from "@/app/helpers/helpers";
+import { calculateAmountLimitByList } from "@/transactions/transactions.helpers";
 
 const form = new TransactionsFormService();
 const events = new TransactionsFormEventsService(form);
 
-const installmentsAmountFormatted = computed((): string =>
-  form.getInstallmentsAmountFormatted()
-);
 const modalTitle = computed((): string => form.getModalTitle());
 
-const showModal = (): void => {
+const showModal = async (id = 0): Promise<void> => {
   form.show.value = true;
-};
-const closeModal = (): void => {
-  events.closeModalHandler();
 
-  emits("onClose");
-};
-const submitForm = async (): Promise<void> => {
-  form.submit();
+  if (isNaN(id) || id === 0) return;
 
-  closeModal();
+  await form.fillForByTransactionId(id);
 };
+const showModalHandler = async (): Promise<void> => await showModal();
+const closeModal = (): void => events.closeModalHandler();
 
-onMounted(async (): Promise<void> => {
-  await events.populateUsers();
+form.setBeforeSubmitHandler(closeModal);
+
+const amoutLimit = computed((): number => {
+  if (form.fields.installments.value.length === 0)
+    return form.fields.amount.value;
+
+  return calculateAmountLimitByList(
+    form.fields.amount.value,
+    form.fields.installments.value
+  );
 });
+
+onMounted(async (): Promise<void> => await form.populateUsers());
 
 defineExpose({
   showModal,
@@ -60,8 +46,8 @@ defineExpose({
 </script>
 
 <template>
-  <button class="btn btn-primary" @click="showModal" v-if="props.showAddButton">
-    Add Transaction
+  <button class="btn btn-primary" @click="showModalHandler">
+    {{ FormStrings.addTransaction }}
   </button>
 
   <AppModal
@@ -71,7 +57,7 @@ defineExpose({
     :footer="form.modalFooterConfig"
     @on-close="closeModal"
     @on-reset="() => events.reset()"
-    @on-save.prevent="submitForm"
+    @on-save.prevent="() => form.submit()"
   >
     <div class="container-fluid">
       <div class="form-group row">
@@ -179,27 +165,16 @@ defineExpose({
 
       <div class="form-group row">
         <div class="col-12">
-          <div class="flex-mb-3">
-            <div class="d-flex">
-              <label class="fw-bold"> Amount of selected installments: </label>
-
-              <span
-                class="ms-2 form-control flex-fill w-fit-content text-end disabled"
-              >
-                {{ installmentsAmountFormatted }}
-              </span>
-            </div>
-
-            <AppValidationMessages
-              :validations="form.fields.installments.validations"
-              v-if="form.fields.installments.invalid"
-            />
-          </div>
-
           <TransactionsFormInstallments
-            :allow-selection="form.allowKeepSelectionInstalments.value"
-            @on-search="events.searchInstallments"
-            @on-select-installment="(installment: Installment) => events.selectedInstallmentHandler(installment)"
+            :allow-selection="form.allowAddInstallments.value"
+            :amount-limit="amoutLimit"
+            @on-search="(appendData: boolean) => events.searchInstallments(appendData)"
+            @on-add-installments="(installments: Installment[]) => events.validateIfAllowAddInstallments(installments)"
+          />
+
+          <AppValidationMessages
+            :validations="form.fields.installments.validations"
+            v-if="form.fields.installments.invalid"
           />
         </div>
       </div>

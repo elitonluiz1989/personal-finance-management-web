@@ -9,7 +9,7 @@ export abstract class FormFields {
     return this._fieldsList;
   }
 
-  public enableAll() {
+  public enableAll(): void {
     for (const field of this._fieldsList) {
       if (field.disabled === false) continue;
 
@@ -17,7 +17,7 @@ export abstract class FormFields {
     }
   }
 
-  public disableAll() {
+  public disableAll(): void {
     for (const field of this._fieldsList) {
       if (field.disabled) continue;
 
@@ -25,13 +25,13 @@ export abstract class FormFields {
     }
   }
 
-  public resetAll() {
+  public resetAll(): void {
     for (const field of this._fieldsList) {
       field.reset();
     }
   }
 
-  public markAllAsValid() {
+  public markAllAsValid(): void {
     for (const field of this._fieldsList) {
       field.markAsValid();
     }

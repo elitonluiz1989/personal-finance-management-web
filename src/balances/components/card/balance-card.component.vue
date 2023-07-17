@@ -20,7 +20,7 @@ type BalanceCardEmits = {
 const props = defineProps<BalanceCardProps>();
 const emits = defineEmits<BalanceCardEmits>();
 
-const cardCssStyle = (type: BalanceTypeEnum) => ({
+const cardCssStyle = (type: BalanceTypeEnum | undefined) => ({
   "balance--credit": type === BalanceTypeEnum.credit,
   "balance--debt": type === BalanceTypeEnum.debt,
 });

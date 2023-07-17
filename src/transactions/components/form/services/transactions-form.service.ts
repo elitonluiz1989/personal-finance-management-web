@@ -1,25 +1,26 @@
 import { IAppModalFooterProps } from "@/app/components/modal/types";
-import { CurrencyFormatterStatic } from "@/app/helpers/currency-formatter";
+import { arraySum } from "@/app/helpers/helpers";
 import { FormService } from "@/app/services/form/form.service";
 import { ValidationService } from "@/app/services/validation/validation.service";
 import { StoreHelper } from "@/app/store/store.helper";
+import { Installment } from "@/installments/installment.model";
+import * as TransactionType from "@/transactions/enums/transaction-type.enum";
 import { TransactionFormFields } from "@/transactions/models/transaction-form-fields.model";
 import { TransactionStateService as StateService } from "@/transactions/transaction-state.service";
-import * as TransactionType from "@/transactions/transaction-type.enum";
 import {
-  TransactionsFormStrings as FormResource,
+  TransactionsFormStrings as FormStrings,
   TransactionsStoreStrings as StoreStrings,
-} from "@/transactions/transactions.resources";
+} from "@/transactions/transactions.strings";
 import { User } from "@/users/user.model";
 import { ref } from "vue";
 
 export class TransactionsFormService extends FormService<TransactionFormFields> {
   public show = ref(false);
-  public modalTitle = ref(FormResource.insertTitle);
+  public modalTitle = ref(FormStrings.insertTitle);
   public editMode = ref(false);
-  public refinanceMode = ref(false);
   public users = ref<User[]>([]);
-  public allowKeepSelectionInstalments = ref(true);
+  public allowAddInstallments = ref(false);
+  public amountLimit = ref(0);
   public installmentsAmount = ref(0);
   public transactionTypes = TransactionType.toKeyValue();
 
@@ -36,36 +37,60 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
     return this._modalFooterConfig;
   }
 
-  public getInstallmentsAmountFormatted(): string {
-    if (!this.installmentsAmount.value)
-      return CurrencyFormatterStatic.format(0);
-
-    return CurrencyFormatterStatic.format(this.installmentsAmount.value);
-  }
-
   public getModalTitle(): string {
     return this.editMode.value
-      ? FormResource.editTitle
-      : FormResource.insertTitle;
+      ? FormStrings.editTitle
+      : FormStrings.insertTitle;
   }
 
   public resetState(): void {
     this.show.value = false;
     this.editMode.value = false;
-    this.refinanceMode.value = false;
-    this.modalTitle.value = FormResource.insertTitle;
+    this.modalTitle.value = FormStrings.insertTitle;
     this.installmentsAmount.value = 0;
   }
 
-  public validateIfAllowKeepSelection(): void {
-    this.allowKeepSelectionInstalments.value =
-      this.installmentsAmount.value < this._formFields.amount.value;
+  public updateAmountValues(): void {
+    this.installmentsAmount.value = arraySum(
+      this._formFields.installments.model.value,
+      (installment: Installment) => installment.amount
+    );
+    this.amountLimit.value =
+      this._formFields.amount.value - this.installmentsAmount.value;
+  }
+
+  public validateIfAllowAddInstallments(): void {
+    this.allowAddInstallments.value =
+      this._formFields.amount.changed &&
+      this._formFields.userId.changed &&
+      this._formFields.type.changed &&
+      this.amountLimit.value > 0;
   }
 
   public async searchForUserInstallments(appendData: boolean): Promise<void> {
     this._page = appendData ? this._page + 1 : 1;
 
-    await StateService.list(this._formFields, this._page);
+    await StateService.listInstallments(this._formFields, this._page);
+  }
+
+  public async populateUsers(): Promise<void> {
+    this.users.value = await StateService.getUsers();
+  }
+
+  public async fillForByTransactionId(id: number): Promise<void> {
+    const transaction = await StateService.findTransaction(id);
+
+    if (!transaction) {
+      alert(FormStrings.transactionNotFound);
+
+      return;
+    }
+
+    this._formFields.populate(transaction);
+  }
+
+  public setBeforeSubmitHandler(handler: () => void): void {
+    this._beforeSubmitHandler = handler;
   }
 
   public override async submit(): Promise<void> {
@@ -76,6 +101,9 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
     const dto = this._formFields.createStoreDto();
 
     await StoreHelper.dispatch(StoreStrings.actionAdd.namespaced, dto);
+
+    if (this._beforeSubmitHandler instanceof Function)
+      this._beforeSubmitHandler();
   }
 
   protected override initialize(): void {

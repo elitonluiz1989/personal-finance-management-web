@@ -12,19 +12,37 @@ export class StoreHelper {
     return this.store?.getters[getter];
   }
 
-  public static get<T>(getter: string, defualtValue: T): T {
+  public static get<TValue>(getter: string, defualtValue: TValue): TValue {
     const value = this.store?.getters[getter];
 
     if (isNullOrUndefined(value)) return defualtValue;
 
-    return value as T;
+    return value as TValue;
   }
 
-  public static set<T>(setter: string, payload: T): void {
+  public static getWithParameters<TValue, TParam>(
+    getter: string,
+    param: TParam,
+    defualtValue: TValue
+  ): TValue {
+    if (this.store?.getters[getter] instanceof Function === false)
+      return defualtValue;
+
+    const value = this.store.getters[getter](param);
+
+    if (isNullOrUndefined(value)) return defualtValue;
+
+    return value as TValue;
+  }
+
+  public static set<TPayload>(setter: string, payload: TPayload): void {
     this.store?.commit(setter, payload);
   }
 
-  public static async dispatch<T>(action: string, payload?: T): Promise<void> {
+  public static async dispatch<TPayload>(
+    action: string,
+    payload?: TPayload
+  ): Promise<void> {
     await this.store?.dispatch(action, payload);
   }
 }
