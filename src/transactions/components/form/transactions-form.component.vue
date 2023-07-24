@@ -37,6 +37,9 @@ const amoutLimit = computed((): number => {
     form.fields.installments.value
   );
 });
+const onSearch = (appendData: boolean) => events.searchInstallments(appendData);
+const onSelectInstallments = (installments: Installment[]) =>
+  events.validateIfAllowAddInstallments(installments);
 
 onMounted(async (): Promise<void> => await form.populateUsers());
 
@@ -168,8 +171,8 @@ defineExpose({
           <TransactionsFormInstallments
             :allow-selection="form.allowAddInstallments.value"
             :amount-limit="amoutLimit"
-            @on-search="(appendData: boolean) => events.searchInstallments(appendData)"
-            @on-add-installments="(installments: Installment[]) => events.validateIfAllowAddInstallments(installments)"
+            @on-search="onSearch"
+            @on-select-installments="onSelectInstallments"
           />
 
           <AppValidationMessages

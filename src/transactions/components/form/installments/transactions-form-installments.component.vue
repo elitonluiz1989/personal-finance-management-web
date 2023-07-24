@@ -8,6 +8,7 @@ import { TransactionsFormStrings as FormStrings } from "@/transactions/transacti
 import { defineEmits, defineProps, ref, withDefaults } from "vue";
 import TransactionsFormInstallmentsModal from "./transactions-form-installments-modal.component.vue";
 import { arraySum } from "@/app/helpers/helpers";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 type TransactionsFormInstallmentsPropsType = {
   allowSelection?: boolean;
@@ -15,7 +16,7 @@ type TransactionsFormInstallmentsPropsType = {
 };
 type TransactionsFormInstallmentsEmitsType = {
   (e: "onSearch", appendData: boolean): void;
-  (e: "onAddInstallments", installmentId: Installment[]): void;
+  (e: "onSelectInstallments", installmentId: Installment[]): void;
 };
 
 const showModal = ref(false);
@@ -43,7 +44,7 @@ const search = (appendData: boolean) => emits("onSearch", appendData);
 const selectedAmountHandler = () => {
   selectedAmount = arraySum(
     selectedInstallments.value,
-    (installment: Installment) => installment.amount
+    (installment: Installment) => installment.amountHandled
   );
 
   if (selectedAmount <= 0) selectedAmount = 0;
@@ -51,7 +52,7 @@ const selectedAmountHandler = () => {
   selectedAmountFormatted.value =
     CurrencyFormatterStatic.format(selectedAmount);
 };
-const selectInstallments = (installments: Installment[]) => {
+const selectInstallments = (installments: Installment[]): void => {
   if (selectedInstallments.value.length === 0) {
     selectedInstallments.value = installments;
   } else {
@@ -60,7 +61,16 @@ const selectInstallments = (installments: Installment[]) => {
 
   selectedAmountHandler();
 
-  emits("onAddInstallments", selectedInstallments.value);
+  emits("onSelectInstallments", selectedInstallments.value);
+};
+const removeInstallment = (installmentId: number): void => {
+  selectedInstallments.value = selectedInstallments.value.filter(
+    (installment) => installment.id !== installmentId
+  );
+
+  selectedAmountHandler();
+
+  emits("onSelectInstallments", selectedInstallments.value);
 };
 </script>
 
@@ -81,7 +91,7 @@ const selectInstallments = (installments: Installment[]) => {
         :key="index"
       >
         <div class="col-auto d-flex align-items-center text-center border-end">
-          {{ installment.numberDescriptionHandler() }}
+          {{ installment.numberDescription }}
         </div>
 
         <div class="col">
@@ -102,7 +112,16 @@ const selectInstallments = (installments: Installment[]) => {
         </div>
 
         <div class="col-auto d-flex align-items-center text-end border-start">
-          {{ installment.amountHandler() }}
+          {{ installment.amountFormatted }}
+        </div>
+
+        <div class="col-auto d-flex align-items-center text-end border-start">
+          <button
+            class="border-0 bg-transparent m-0"
+            @click.prevent="removeInstallment(installment.id)"
+          >
+            <FontAwesomeIcon icon="fa-solid fa-trash-can" />
+          </button>
         </div>
       </li>
 

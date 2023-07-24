@@ -19,18 +19,25 @@ export class Installment {
   public active = false;
   public balance: BalanceSimplified | undefined = undefined;
 
-  public numberDescriptionHandler(): string {
+  public get numberDescription(): string {
     return `${this.number}/${this.balance?.installmentsNumber}`;
   }
 
-  public amountHandler = (): string => {
+  public get amountHandled(): number {
+    if (this.status == InstallmentStatusEnum.partiallyPaid)
+      return this.amountRemaining;
+
+    return this.amount;
+  }
+
+  public get amountFormatted(): string {
     let amount = this.amount;
 
     if (this.status == InstallmentStatusEnum.partiallyPaid)
       amount = this.amountRemaining;
 
     return CurrencyFormatterStatic.format(amount);
-  };
+  }
 
   public static castList<T extends IIndexable<any>>(data: T[]): Installment[] {
     const installments: Installment[] = [];

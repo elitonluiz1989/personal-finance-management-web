@@ -53,7 +53,7 @@ const select = () => {
     <div
       class="d-flex col-auto align-items-center p-2 border-end border-secondary"
     >
-      {{ props.installment.numberDescriptionHandler() }}
+      {{ props.installment.numberDescription }}
     </div>
 
     <div class="col">
@@ -70,7 +70,7 @@ const select = () => {
         />
 
         <span class="ms-2">
-          {{ props.installment.amountHandler() }}
+          {{ props.installment.amountFormatted }}
         </span>
       </div>
     </div>

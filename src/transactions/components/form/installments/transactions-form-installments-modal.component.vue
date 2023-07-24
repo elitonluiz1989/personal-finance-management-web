@@ -68,7 +68,7 @@ const search = (appendData: boolean) => emits("onSearch", appendData);
 const selectedAmountHandler = () => {
   selectedAmount.value = arraySum(
     selectedInstallment.value,
-    (installment) => installment.amount
+    (installment) => installment.amountHandled
   );
 };
 const addInstallment = (installment: Installment) => {
