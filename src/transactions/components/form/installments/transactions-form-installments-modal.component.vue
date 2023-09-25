@@ -61,6 +61,10 @@ const amountAvailableToSelect = computed((): string => {
 const closeModal = () => {
   selectedInstallment.value = [];
   selectedAmount.value = 0;
+  StoreHelper.set<Installment[]>(
+    InstallmentsResources.store.mutations.addInstallments.namespaced,
+    []
+  );
 
   emits("onClose");
 };
@@ -128,6 +132,9 @@ const addInstallmentsEvent = () => {
           {{ FormStrings.loadMore }}
         </button>
       </div>
+    </div>
+    <div v-else>
+      <p class="text-center">{{ FormStrings.userInstallmentsNotFound }}</p>
     </div>
   </AppModal>
 </template>

@@ -5,12 +5,13 @@ import { CurrencyFormatterStatic } from "@/app/helpers/currency-formatter";
 import InstallmentBadge from "@/installments/components/installment-badge.component.vue";
 import { Installment } from "@/installments/installment.model";
 import { TransactionsFormStrings as FormStrings } from "@/transactions/transactions.strings";
-import { defineEmits, defineProps, ref, withDefaults } from "vue";
+import { defineEmits, defineProps, ref, watch, withDefaults } from "vue";
 import TransactionsFormInstallmentsModal from "./transactions-form-installments-modal.component.vue";
 import { arraySum } from "@/app/helpers/helpers";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 type TransactionsFormInstallmentsPropsType = {
+  transactionInstallments?: Installment[];
   allowSelection?: boolean;
   amountLimit?: number;
 };
@@ -28,6 +29,7 @@ let selectedAmount = 0;
 const props = withDefaults(
   defineProps<TransactionsFormInstallmentsPropsType>(),
   {
+    transactionInstallments: () => [],
     allowSelection: true,
     amountLimit: 0,
   }
@@ -72,6 +74,14 @@ const removeInstallment = (installmentId: number): void => {
 
   emits("onSelectInstallments", selectedInstallments.value);
 };
+
+watch(
+  (): Installment[] => props.transactionInstallments,
+  (installments: Installment[]): void => {
+    selectedInstallments.value = installments ?? [];
+    selectedAmountHandler();
+  }
+);
 </script>
 
 <template>

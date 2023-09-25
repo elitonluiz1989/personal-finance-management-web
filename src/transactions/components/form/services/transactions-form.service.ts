@@ -87,6 +87,7 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
     }
 
     this._formFields.populate(transaction);
+    this.editMode.value = true;
   }
 
   public setBeforeSubmitHandler(handler: () => void): void {

@@ -43,6 +43,8 @@ export class TransactionFormFields extends FormFields {
 
     if (transaction.items?.length === 0) return;
 
+    this.installments.value = [];
+
     for (const item of transaction.items) {
       if (!item.installment) continue;
 

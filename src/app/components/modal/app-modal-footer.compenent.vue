@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AppResources } from "@/app/app.resoures";
-import { computed, withDefaults, defineProps, defineEmits } from "vue";
+import { withDefaults, defineProps, defineEmits } from "vue";
 
 type AppModalFooterProps = {
   isForm: boolean;
@@ -52,14 +52,13 @@ const onSave = (evt: Event) => emits("onSave", evt);
       {{ props.resetText }}
     </button>
 
-    <template v-if="props.showSaveButton">
-      <button type="submit" class="btn btn-success" v-if="props.isForm">
-        {{ props.saveText }}
-      </button>
-
-      <button type="button" class="btn btn-success" @click="onSave" v-else>
-        {{ props.saveText }}
-      </button>
-    </template>
+    <button
+      type="submit"
+      class="btn btn-success"
+      @click="onSave"
+      v-if="props.showSaveButton"
+    >
+      {{ props.saveText }}
+    </button>
   </div>
 </template>

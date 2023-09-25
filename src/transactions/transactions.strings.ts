@@ -16,6 +16,7 @@ export class TransactionsFormStrings {
   public static amoutSelectedInstallments = "Amount of selected installments:";
   public static transactionNotFound = "Trasanction not found";
   public static addInstallments = "Add installments";
+  public static userInstallmentsNotFound = "Intallments not found";
   public static amountAvailableToSelect = (amount: string) =>
     `Amount avaliable to select: ${amount}`;
 }

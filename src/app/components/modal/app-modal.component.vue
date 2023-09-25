@@ -90,7 +90,7 @@ const onSave = (evt: Event) => emits("onSave", evt);
             :reset-text="props.footer?.resetText"
             :show-dismiss-button="props.footer?.showDismissButton"
             :dismiss-text="props.footer?.dismissText"
-            @trigger-on-close="onClose"
+            @on-close="onClose"
           />
         </form>
 

@@ -54,6 +54,10 @@ export class FormField<T> {
     return this._model.value;
   }
 
+  set value(value: T) {
+    this._model.value = value;
+  }
+
   get changed(): boolean {
     return (
       isNullOrUndefined(this._model.value) === false &&

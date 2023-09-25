@@ -3,12 +3,11 @@ import AppFormInputCurrency from "@/app/components/form/input-curreny/app-form-i
 import AppModal from "@/app/components/modal/app-modal.component.vue";
 import AppValidationMessages from "@/app/components/validation-messages/app-validation-messages.component.vue";
 import { Installment } from "@/installments/installment.model";
-import { computed, defineExpose, onMounted } from "vue";
+import { computed, defineExpose, onMounted, ref } from "vue";
 import { TransactionsFormStrings as FormStrings } from "../../transactions.strings";
 import TransactionsFormInstallments from "./installments/transactions-form-installments.component.vue";
 import { TransactionsFormEventsService } from "./services/transactions-form-events.service";
 import { TransactionsFormService } from "./services/transactions-form.service";
-import { arraySum } from "@/app/helpers/helpers";
 import { calculateAmountLimitByList } from "@/transactions/transactions.helpers";
 
 const form = new TransactionsFormService();
@@ -19,9 +18,16 @@ const modalTitle = computed((): string => form.getModalTitle());
 const showModal = async (id = 0): Promise<void> => {
   form.show.value = true;
 
-  if (isNaN(id) || id === 0) return;
+  if (isNaN(id) || id === 0) {
+    form.editMode.value = false;
+    form.reset();
+
+    return;
+  }
 
   await form.fillForByTransactionId(id);
+
+  console.log(form.fields.installments.value);
 };
 const showModalHandler = async (): Promise<void> => await showModal();
 const closeModal = (): void => events.closeModalHandler();
@@ -43,9 +49,7 @@ const onSelectInstallments = (installments: Installment[]) =>
 
 onMounted(async (): Promise<void> => await form.populateUsers());
 
-defineExpose({
-  showModal,
-});
+defineExpose({ showModal });
 </script>
 
 <template>
@@ -151,8 +155,8 @@ defineExpose({
             <template v-if="form.transactionTypes.length > 0">
               <option
                 :value="type.value"
-                v-for="(type, index) of form.transactionTypes"
                 :key="index"
+                v-for="(type, index) of form.transactionTypes"
               >
                 {{ type.key }}
               </option>
@@ -169,6 +173,7 @@ defineExpose({
       <div class="form-group row">
         <div class="col-12">
           <TransactionsFormInstallments
+            :transaction-installments="form.fields.installments.value"
             :allow-selection="form.allowAddInstallments.value"
             :amount-limit="amoutLimit"
             @on-search="onSearch"
