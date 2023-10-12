@@ -7,20 +7,19 @@ import {
 } from "@/app/helpers/helpers";
 import { ValidationRule } from "@/app/types";
 
-export class ValidationRules {
-  public static required<T>(fieldName: string): ValidationRule<T> {
-    return {
-      rule: (value: T) => this.requiredValidation(value),
-      message: `${fieldName} is required.`,
-    };
-  }
+export type ValidationRulePrerequisite = () => boolean;
 
-  public static requiredIf<T>(fieldName: string, prerequisite: () => boolean) {
+export class ValidationRules {
+  public static required<T>(
+    fieldName: string,
+    prerequisite: ValidationRulePrerequisite | undefined = undefined
+  ): ValidationRule<T> {
     return {
       rule: (value: T) => {
-        if (prerequisite() === false) return true;
+        if (ValidationRules.validatePrerequisitesFulfillment(prerequisite))
+          return true;
 
-        return this.requiredValidation(value);
+        return ValidationRules.requiredValidation(value);
       },
       message: `${fieldName} is required.`,
     };
@@ -28,10 +27,16 @@ export class ValidationRules {
 
   public static maxlength(
     fieldName: string,
-    maxlength: number
+    maxlength: number,
+    prerequisite: ValidationRulePrerequisite | undefined = undefined
   ): ValidationRule<string> {
     return {
-      rule: (value: string) => String(value).length <= maxlength,
+      rule: (value: string) => {
+        if (ValidationRules.validatePrerequisitesFulfillment(prerequisite))
+          return true;
+
+        return String(value).length <= maxlength;
+      },
       message: `${fieldName} length needs to be less than ${maxlength}.`,
     };
   }
@@ -39,10 +44,14 @@ export class ValidationRules {
   public static between(
     fieldName: string,
     min: number,
-    max: number
+    max: number,
+    prerequisite: ValidationRulePrerequisite | undefined = undefined
   ): ValidationRule<number> {
     return {
       rule: (value: number) => {
+        if (ValidationRules.validatePrerequisitesFulfillment(prerequisite))
+          return true;
+
         const num = +value;
 
         if (isNaN(num)) return false;
@@ -70,5 +79,11 @@ export class ValidationRules {
     const numValue = Number(value);
 
     return isNaN(numValue) === false && numValue > 0;
+  }
+
+  private static validatePrerequisitesFulfillment(
+    prerequisite: ValidationRulePrerequisite | undefined
+  ) {
+    return prerequisite instanceof Function && !prerequisite();
   }
 }

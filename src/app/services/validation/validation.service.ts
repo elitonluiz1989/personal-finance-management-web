@@ -22,18 +22,23 @@ export class ValidationService<TFormFields extends FormFields> {
     this._errors = [];
     this._invalid = false;
 
+    let fieldWithErrors: boolean;
+
     for (const field of this._form.fieldsList) {
       if (isNullOrUndefined(field.validations)) continue;
 
+      fieldWithErrors = false;
+
       for (const validation of field.validations) {
         if (validation.rule(field.model.value)) {
-          if (field.invalid === false) field.markAsValid();
+          if (fieldWithErrors === false && field.invalid) field.markAsValid();
 
           continue;
         }
 
         this._errors.push(validation.message);
         field.markAsInvalid();
+        fieldWithErrors = true;
       }
     }
 

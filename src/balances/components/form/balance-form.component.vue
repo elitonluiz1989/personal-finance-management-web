@@ -67,6 +67,10 @@ const closeModal = (value: boolean) => {
 const submitForm = async () => {
   await form.submit();
 
+  if (form.invalid) {
+    return;
+  }
+
   closeModal(false);
 };
 
@@ -226,7 +230,6 @@ defineExpose({
         <div class="col-12 col-sm-8 mb-3">
           <label class="form-label">
             {{ BalancesResources.form.fields.financed }}?
-            {{ form.fields.financed.model.value }}
           </label>
 
           <div class="w-100">

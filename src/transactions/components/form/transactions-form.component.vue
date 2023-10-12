@@ -26,8 +26,6 @@ const showModal = async (id = 0): Promise<void> => {
   }
 
   await form.fillForByTransactionId(id);
-
-  console.log(form.fields.installments.value);
 };
 const showModalHandler = async (): Promise<void> => await showModal();
 const closeModal = (): void => events.closeModalHandler();

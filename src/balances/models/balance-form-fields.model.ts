@@ -52,11 +52,16 @@ export class BalanceFormFields extends FormFields {
       BalancesResources.form.fields.intallmentsNumber,
       0,
       [
-        Rules.requiredIf<number>(
+        Rules.required<number>(
           BalancesResources.form.fields.intallmentsNumber,
           () => this.financed.value
         ),
-        Rules.between(BalancesResources.form.fields.intallmentsNumber, 1, 999),
+        Rules.between(
+          BalancesResources.form.fields.intallmentsNumber,
+          1,
+          999,
+          () => this.financed.value
+        ),
       ]
     );
 

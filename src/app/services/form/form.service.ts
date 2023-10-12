@@ -1,5 +1,4 @@
 import { ValidationService } from "../validation/validation.service";
-import { FormSubmitHandler } from "./types";
 import { FormFields } from "./form-fields.model";
 
 export abstract class FormService<TFormFields extends FormFields> {

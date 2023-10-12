@@ -32,22 +32,20 @@ const toggleInstallmentsList = () => (clicked.value = !clicked.value);
     >
       <div class="flex-fill ps-3 text-start">Installments</div>
 
-      <div class="balance__installments-indicator" :class="angleDownStyles">
+      <div
+        class="balance__installments-indicator"
+        :class="angleDownStyles"
+        ref="buttonRef"
+      >
         <FontAwesomeIcon icon="fa-solid fa-plus" />
       </div>
     </button>
 
-    <div class="position-relative">
+    <div class="position-relative w-100">
       <div
-        class="balance__installments-floating position-absolute w-100"
+        class="balance__installments-floating position-absolute"
         v-if="clicked"
       >
-        <div
-          class="balance__installments-caret d-flex justify-content-end overflow-hidden"
-        >
-          <FontAwesomeIcon icon="fa-solid fa-caret-up" size="lg" />
-        </div>
-
         <ul
           class="balance__installments-list ps-0 m-0 rounded bg-white"
           v-if="props.installments.length > 0"
@@ -82,15 +80,11 @@ const toggleInstallmentsList = () => (clicked.value = !clicked.value);
   }
 
   &-floating {
+    min-width: 100%;
     padding-bottom: 1rem;
     z-index: 1;
     top: 0;
-    right: 0.3rem;
-  }
-
-  &-caret {
-    height: 10px;
-    padding-right: 0.28rem;
+    left: 0.3rem;
   }
 
   &-list {
