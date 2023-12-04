@@ -74,24 +74,29 @@ export const transactions: Module<TransactionStore, State> = {
       { commit, dispatch },
       payload: TransactionStoreDto
     ): Promise<void> {
-      const result = await axios.post<Transaction>("/Transactions", payload);
+      await axios.post<Transaction>("/Transactions", payload);
 
-      if (!result.data) {
-        dispatch(Strings.actionList.namespaced);
-
-        return;
-      }
-
-      commit(Strings.setterAddTransaction.value, result.data);
+      dispatch(Strings.actionList.value);
     },
 
-    async [Strings.actionFindAction.value](
+    async [Strings.actionFind.value](
       { commit },
       payload: number
     ): Promise<void> {
       const result = await axios.get<Transaction>(`/Transactions/${payload}`);
 
       commit(Strings.setterAddTransaction.value, result?.data);
+    },
+
+    async [Strings.removeAdd.value](
+      { commit, state },
+      payload: number
+    ): Promise<void> {
+      await axios.delete<Transaction>(`/Transactions/${payload}`);
+
+      const transactions = state.transactions.filter((t) => t.id !== payload);
+
+      commit(Strings.setterAddTransactions.value, transactions);
     },
   },
 };

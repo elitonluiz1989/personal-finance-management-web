@@ -19,6 +19,8 @@ export class TransactionsFormStrings {
   public static userInstallmentsNotFound = "Intallments not found";
   public static amountAvailableToSelect = (amount: string) =>
     `Amount avaliable to select: ${amount}`;
+  public static removeTransaction =
+    "Do you want to remove the transaction? All changes made by the transaction will be undone.";
 }
 
 export class TransactionsStoreStrings {
@@ -46,12 +48,16 @@ export class TransactionsStoreStrings {
     TransactionsStoreStrings.namespace,
     "list"
   );
-  public static actionFindAction = createStoreResourceItem(
+  public static actionFind = createStoreResourceItem(
     TransactionsStoreStrings.namespace,
     "find"
   );
   public static actionAdd = createStoreResourceItem(
     TransactionsStoreStrings.namespace,
     "add"
+  );
+  public static removeAdd = createStoreResourceItem(
+    TransactionsStoreStrings.namespace,
+    "remove"
   );
 }

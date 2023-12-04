@@ -4,7 +4,10 @@ import { computed, onMounted, ref } from "vue";
 import TransactionCard from "../components/card/transaction-card.component.vue";
 import TransactionForm from "../components/form/transactions-form.component.vue";
 import { Transaction } from "../models/transaction.model";
-import { TransactionsStoreStrings as StoreStrings } from "../transactions.strings";
+import {
+  TransactionsFormStrings as FormStrings,
+  TransactionsStoreStrings as StoreStrings,
+} from "../transactions.strings";
 
 const form = ref<InstanceType<typeof TransactionForm> | null>(null);
 
@@ -12,8 +15,17 @@ const transactions = computed(() =>
   StoreHelper.get<Transaction[]>(StoreStrings.getterTransactions.namespaced, [])
 );
 
-const editTransactionHandler = async (transactionId: number) =>
+const editTransactionHandler = async (transactionId: number): Promise<void> =>
   form.value?.showModal(transactionId);
+const removeTransactionHandler = async (
+  transactionId: number
+): Promise<void> => {
+  const result = confirm(FormStrings.removeTransaction);
+
+  if (!result) return;
+
+  await StoreHelper.dispatch(StoreStrings.removeAdd.namespaced, transactionId);
+};
 
 onMounted(
   async (): Promise<void> =>
@@ -38,6 +50,7 @@ onMounted(
         <TransactionCard
           :transaction="transaction"
           @on-edit="editTransactionHandler"
+          @on-remove="removeTransactionHandler"
         />
       </div>
     </div>

@@ -18,6 +18,7 @@ type TransactionCardProps = {
 };
 type TransactionCardEmits = {
   (e: "onEdit", transactionId: number): void;
+  (e: "onRemove", transactionId: number): void;
 };
 
 const props = defineProps<TransactionCardProps>();
@@ -33,6 +34,7 @@ const amountFormatted = (): string =>
   CurrencyFormatterStatic.format(props.transaction.amount);
 
 const editEvent = () => emits("onEdit", props.transaction.id);
+const removeEvent = () => emits("onRemove", props.transaction.id);
 </script>
 
 <template>
@@ -64,6 +66,10 @@ const editEvent = () => emits("onEdit", props.transaction.id);
     <template #actions>
       <button :title="AppResources.edit" @click="editEvent">
         <FontAwesomeIcon icon="fa-solid fa-pen" size="lg" />
+      </button>
+
+      <button :title="AppResources.remove" @click="removeEvent">
+        <FontAwesomeIcon icon="fa-solid fa-trash-can" size="lg" />
       </button>
     </template>
   </AppCard>
