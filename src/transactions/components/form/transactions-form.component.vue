@@ -174,6 +174,7 @@ defineExpose({ showModal });
             :transaction-installments="form.fields.installments.value"
             :allow-selection="form.allowAddInstallments.value"
             :amount-limit="amoutLimit"
+            :disabled="form.editMode.value"
             @on-search="onSearch"
             @on-select-installments="onSelectInstallments"
           />

@@ -87,7 +87,10 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
     }
 
     this._formFields.populate(transaction);
+    this._formFields.disableAll();
+    this._formFields.date.enable();
     this.editMode.value = true;
+    this.allowAddInstallments.value = false;
   }
 
   public setBeforeSubmitHandler(handler: () => void): void {

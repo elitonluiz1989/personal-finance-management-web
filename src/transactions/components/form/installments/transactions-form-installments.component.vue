@@ -14,6 +14,7 @@ type TransactionsFormInstallmentsPropsType = {
   transactionInstallments?: Installment[];
   allowSelection?: boolean;
   amountLimit?: number;
+  disabled?: boolean;
 };
 type TransactionsFormInstallmentsEmitsType = {
   (e: "onSearch", appendData: boolean): void;
@@ -32,6 +33,7 @@ const props = withDefaults(
     transactionInstallments: () => [],
     allowSelection: true,
     amountLimit: 0,
+    disabled: false,
   }
 );
 const emits = defineEmits<TransactionsFormInstallmentsEmitsType>();
@@ -125,7 +127,10 @@ watch(
           {{ installment.amountFormatted }}
         </div>
 
-        <div class="col-auto d-flex align-items-center text-end border-start">
+        <div
+          class="col-auto d-flex align-items-center text-end border-start"
+          v-if="disabled === false"
+        >
           <button
             class="border-0 bg-transparent m-0"
             @click.prevent="removeInstallment(installment.id)"
