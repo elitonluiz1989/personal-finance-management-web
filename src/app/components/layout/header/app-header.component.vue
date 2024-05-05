@@ -10,7 +10,7 @@ const props = defineProps<AppHeaderPropsType>();
 const navItems: IAppNavitem[] = [
   {
     url: "/",
-    text: "Home",
+    text: "Management",
     cssClasses: "nav-link",
     active: false,
   },

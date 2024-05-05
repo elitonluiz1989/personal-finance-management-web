@@ -71,7 +71,7 @@ export const transactions: Module<TransactionStore, State> = {
     },
 
     async [Strings.actionAdd.value](
-      { commit, dispatch },
+      { dispatch },
       payload: TransactionStoreDto
     ): Promise<void> {
       await axios.post<Transaction>("/Transactions", payload);
