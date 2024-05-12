@@ -272,8 +272,6 @@ defineExpose({
           <AppFormInputNumber
             class="form-control"
             form-field="installmentsNumber"
-            :min="1"
-            :max="999"
             :disabled="form.fields.installmentsNumber.disabled"
             :on-focus="() => form.fields.installmentsNumber.clearValidation()"
             v-model="form.fields.installmentsNumber.model.value"

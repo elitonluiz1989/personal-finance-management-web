@@ -5,7 +5,7 @@ import { BalancesResources } from "@/balances/balances.resources";
 import { computed, defineProps } from "vue";
 
 type BalanceBadgeProps = {
-  type: BalanceTypeEnum;
+  type: BalanceTypeEnum | undefined;
   closed: boolean;
 };
 
@@ -16,7 +16,7 @@ const cssStyles = computed(() => ({
   "balance__badges--debt": props.type === BalanceTypeEnum.debt,
 }));
 
-const getBalanceType = (type: BalanceTypeEnum): string => {
+const getBalanceType = (type: BalanceTypeEnum | undefined): string => {
   if (type === BalanceTypeEnum.credit) return AppResources.credit;
 
   if (type === BalanceTypeEnum.debt) return AppResources.debt;

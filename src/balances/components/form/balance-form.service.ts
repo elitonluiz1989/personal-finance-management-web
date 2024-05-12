@@ -23,7 +23,6 @@ export class BalanceFormService extends FormService<BalanceFormFields> {
     const balance = StoreHelper.getRaw(
       BalancesResources.store.getters.balance.namespaced
     )(balanceId);
-
     this.fields.fill(balance);
     this.fields.disableByMode(this.refinanceMode.value);
   }

@@ -49,7 +49,7 @@ const triggerRemove = () => emits("onRemove", props.balance.id);
       <BalanceCardItem
         class="balance__user"
         label="User"
-        :value="props.balance.userId"
+        :value="props.balance.user?.name ?? ''"
       />
 
       <BalanceCardItem

@@ -60,7 +60,10 @@ const currencyElementHandler = (
   inputValue?: string | undefined
 ): void => {
   element =
-    element ?? document.querySelector<HTMLInputElement>("input[type=text]");
+    element ??
+    document.querySelector<HTMLInputElement>(
+      `input[form-field=${props.formField}]`
+    );
 
   if (!element) return;
 

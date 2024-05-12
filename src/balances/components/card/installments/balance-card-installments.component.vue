@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 type BalanceCardInstallmentsProp = {
   installments: Installment[];
-  type: BalanceTypeEnum;
+  type: BalanceTypeEnum | undefined;
 };
 
 const props = defineProps<BalanceCardInstallmentsProp>();

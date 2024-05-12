@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 type BalanceCardActionsProps = {
   id: number;
-  type: BalanceTypeEnum;
+  type: BalanceTypeEnum | undefined;
 };
 type BalanceCardActionEmits = {
   (e: "onEdit"): void;

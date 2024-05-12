@@ -1,6 +1,7 @@
 import { Installment } from "@/installments/installment.model";
 import { mapFrom } from "@/app/helpers/helpers";
 import { BalanceTypeEnum } from "../balances-type.enum";
+import { User } from "@/users/user.model";
 
 export class Balance {
   public id = 0;
@@ -13,11 +14,18 @@ export class Balance {
   public financed = false;
   public installmentsNumber = 0;
   public closed = false;
+  public user: User | undefined;
   public installments: Installment[] = [];
 
   public static createFrom(data: any): Balance {
     const balance = new Balance();
     const installments: Installment[] = [];
+
+    if (data.user) {
+      balance.user = User.createFrom(data.user);
+
+      delete data.user;
+    }
 
     if (data.installments?.length > 0) {
       for (const installment of data.installments) {
@@ -25,6 +33,8 @@ export class Balance {
       }
 
       data.installments = installments;
+
+      delete data.installments;
     }
 
     mapFrom(data, balance);
