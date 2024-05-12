@@ -6,6 +6,12 @@ export class ManagementHelper {
     return Number(`${year}${month}`);
   }
 
+  public static getReferenceFromString(date: string): number {
+    const reference = date.replace("-", "");
+
+    return Number(reference);
+  }
+
   public static getCurrentReference(): number {
     return ManagementHelper.getReference(new Date());
   }

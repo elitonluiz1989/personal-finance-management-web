@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { StoreHelper } from "@/app/store/store.helper";
-import { ManagementStoreStrings as StoreStrings } from "../management.strings";
+import {
+  ManagementStrings as Strings,
+  ManagementStoreStrings as StoreStrings,
+} from "../management.strings";
 import { computed, onMounted, ref, watch } from "vue";
 import { ManagementHelper as Helper } from "../management.helpers";
 import { Management } from "../models/management.model";
@@ -8,7 +11,7 @@ import { BalanceTypeEnum } from "@/balances/balances-type.enum";
 import { isNullOrWhiteSpace, isNumber } from "@/app/helpers/helpers";
 
 const referenceDate = ref(Helper.getMonthYearStringFromDate(new Date()));
-const reference = ref(Helper.getReference(new Date()));
+const reference = ref(Helper.getReferenceFromString(referenceDate.value));
 
 const managementData = computed(() =>
   StoreHelper.get<Management[]>(StoreStrings.getterItems.namespaced, [])
@@ -19,7 +22,8 @@ const itemAmountStyle = (type?: BalanceTypeEnum) => {
 
   return "px-2 text-end text-danger";
 };
-
+const search = () =>
+  StoreHelper.dispatch(StoreStrings.actionList.namespaced, reference.value);
 const onChangeReference = (newValue: string, oldValue: string): void => {
   if (newValue === oldValue || isNullOrWhiteSpace(newValue)) {
     return;
@@ -33,13 +37,19 @@ const onChangeReference = (newValue: string, oldValue: string): void => {
 
   reference.value = referenceValue;
 
-  StoreHelper.dispatch(StoreStrings.actionList.namespaced, reference.value);
+  search();
+};
+const formartValue = (value?: string, type?: BalanceTypeEnum): string => {
+  if (isNullOrWhiteSpace(value) || !type) {
+    return "0";
+  }
+
+  const sign = type === BalanceTypeEnum.credit ? "+" : "-";
+
+  return `${sign}${value}`;
 };
 
-onMounted(
-  async (): Promise<void> =>
-    StoreHelper.dispatch(StoreStrings.actionList.namespaced, reference.value)
-);
+onMounted(async (): Promise<void> => await search());
 
 watch(referenceDate, onChangeReference);
 </script>
@@ -48,7 +58,11 @@ watch(referenceDate, onChangeReference);
   <div class="container-fluid" v-if="managementData">
     <div class="row pb-5">
       <div class="col-12 d-flex justify-content-center">
-        <input type="month" v-model="referenceDate" />
+        <input class="input-form" type="month" v-model="referenceDate" />
+
+        <button class="btn btn-primary ms-2" @click="search">
+          {{ Strings.reload }}
+        </button>
       </div>
     </div>
 
@@ -78,7 +92,7 @@ watch(referenceDate, onChangeReference);
               </td>
 
               <td :class="itemAmountStyle(item.type)">
-                {{ item.amount?.valueFormatted }}
+                {{ formartValue(item.amount?.valueFormatted, item.type) }}
               </td>
             </tr>
           </tbody>
@@ -90,7 +104,12 @@ watch(referenceDate, onChangeReference);
               </td>
 
               <td :class="itemAmountStyle(management.total?.type)">
-                {{ management.total?.value?.valueFormatted }}
+                {{
+                  formartValue(
+                    management.total?.value?.valueFormatted,
+                    management.total?.type
+                  )
+                }}
               </td>
             </tr>
           </tfoot>

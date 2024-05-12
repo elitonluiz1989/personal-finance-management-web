@@ -1,5 +1,9 @@
 import { createStoreResourceItem } from "@/app/helpers/helpers";
 
+export class ManagementStrings {
+  public static reload = "Reload";
+}
+
 export class ManagementStoreStrings {
   public static namespace = "management";
 
