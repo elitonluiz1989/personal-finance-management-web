@@ -85,7 +85,7 @@ export function isString<T>(value: T): boolean {
 }
 
 export function isNumber<T>(value: T): boolean {
-  return typeof value === "number" && isNaN(Number(value)) === false;
+  return typeof value === "number" && isNaN(value) === false;
 }
 
 export function isBoolean<T>(value: T): boolean {
@@ -97,7 +97,11 @@ export function isDate<T>(value: T) {
 
   const date = new Date(String(value));
 
-  return date && isValidNumber(date.getDate());
+  return value && isValidDate(date);
+}
+
+export function isValidDate(date: Date) {
+  return isValidNumber(date.getDate());
 }
 
 export function isValidNumber<T extends number>(value: T): boolean {
@@ -115,6 +119,12 @@ export function extractDateFormDateTime(date: Date | undefined): string {
   const rawDate = isString(date) ? new Date(date) : date;
 
   return rawDate.toISOString().split("T")[0];
+}
+
+export function createDateFromString(value: string): Date {
+  const valueHandled = value.includes("T") ? value : `${value}T00:00:00`;
+
+  return new Date(valueHandled);
 }
 
 export function queryParamsParse<TRequest>(request: TRequest): string {

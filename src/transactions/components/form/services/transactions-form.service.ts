@@ -27,9 +27,11 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
   private _modalFooterConfig!: IAppModalFooterProps;
   private _page = 1;
 
-  constructor() {
+  constructor(date: string) {
     super();
 
+    this._formFields = new TransactionFormFields(date);
+    this._validateService = new ValidationService(this._formFields);
     this.disableComboxes();
   }
 
@@ -112,8 +114,6 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
 
   protected override initialize(): void {
     this._modalFooterConfig = { show: true };
-    this._formFields = new TransactionFormFields();
-    this._validateService = new ValidationService(this._formFields);
   }
 
   private disableComboxes() {

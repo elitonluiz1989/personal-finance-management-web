@@ -6,6 +6,7 @@ import { FormFields } from "@/app/services/form/form-fields.model";
 import { Transaction } from "./transaction.model";
 import { TransactionTypeEnum } from "../enums/transaction-type.enum";
 import { TransactionStoreDto } from "./transaction-store.dto";
+import { Reference } from "@/app/helpers/Reference";
 
 export class TransactionFormFields extends FormFields {
   public id: FormField<number>;
@@ -15,14 +16,11 @@ export class TransactionFormFields extends FormFields {
   public type: FormField<number>;
   public installments: FormField<Installment[]>;
 
-  constructor() {
+  constructor(date: string) {
     super();
 
     this.id = this.createFormField(FormStrings.id, 0);
-    this.date = this.createFormFieldRequired<string>(
-      FormStrings.date,
-      extractDateFormDateTime(new Date())
-    );
+    this.date = this.createFormFieldRequired<string>(FormStrings.date, date);
     this.amount = this.createFormFieldRequired<number>(FormStrings.amount, 0);
     this.userId = this.createFormFieldRequired<number>(FormStrings.user, 0);
     this.type = this.createFormFieldRequired<number>(FormStrings.type, 0);
@@ -32,6 +30,10 @@ export class TransactionFormFields extends FormFields {
     );
 
     this.fillFieldsList();
+  }
+
+  get reference(): Reference | undefined {
+    return Reference.CreateFromString(this.date.value);
   }
 
   public populate(transaction: Transaction): void {

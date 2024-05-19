@@ -9,6 +9,7 @@ export class ManagementItem {
   public reference = 0;
   public type = BalanceTypeEnum.credit;
   public managementType = ManagementItemTypeEnum.installment;
+  public date = "";
   public description = "";
   public amount: Currency | undefined;
 

@@ -32,7 +32,7 @@ export class Balance {
         installments.push(Installment.createFrom(installment));
       }
 
-      data.installments = installments;
+      balance.installments = installments;
 
       delete data.installments;
     }

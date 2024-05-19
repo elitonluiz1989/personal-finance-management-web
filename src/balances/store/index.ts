@@ -7,12 +7,24 @@ import { Balance } from "../models/balance.model";
 import { isNullOrUndefined } from "@/app/helpers/helpers";
 import { RefinancedBalance } from "../models/balance-refinanced.model";
 
-const handelBalanceData = (balances: Balance[], state: BalancesState) => {
-  for (const key in balances) {
-    balances[key] = Balance.createFrom(balances[key]);
+const balanceDataHandler = (payload: Balance, state: BalancesState): void => {
+  const balance = Balance.createFrom(payload);
+  const index = state.balances.findIndex((p: Balance) => p.id === payload.id);
+
+  if (index >= 0) {
+    state.balances[index] = balance;
+
+    return;
   }
 
-  state.balances = balances;
+  state.balances.push(balance);
+};
+const balancesDataHandler = (payload: Balance[], state: BalancesState) => {
+  state.balances = [];
+
+  for (const data of payload) {
+    balanceDataHandler(data, state);
+  }
 };
 
 export const balances: Module<BalancesState, State> = {
@@ -45,13 +57,19 @@ export const balances: Module<BalancesState, State> = {
       );
       balances.push(payload);
 
-      handelBalanceData(balances, state);
+      balancesDataHandler(balances, state);
     },
     [BalancesResources.store.mutations.addBalances.value](
       state: BalancesState,
       payload: Balance[]
     ) {
-      handelBalanceData(payload, state);
+      balancesDataHandler(payload, state);
+    },
+    [BalancesResources.store.mutations.addBalance.value](
+      state: BalancesState,
+      payload: Balance
+    ) {
+      balanceDataHandler(payload, state);
     },
   },
 
@@ -87,7 +105,7 @@ export const balances: Module<BalancesState, State> = {
         return;
       }
 
-      commit(BalancesResources.store.mutations.addBalances.value, result.data);
+      commit(BalancesResources.store.mutations.addBalance.value, result.data);
     },
     async [BalancesResources.store.actions.refinance.value](
       { commit, dispatch },
@@ -101,7 +119,7 @@ export const balances: Module<BalancesState, State> = {
         return;
       }
 
-      commit(BalancesResources.store.mutations.addBalances.value, result.data);
+      commit(BalancesResources.store.mutations.addBalance.value, result.data);
     },
     async [BalancesResources.store.actions.remove.value](
       { state, commit },

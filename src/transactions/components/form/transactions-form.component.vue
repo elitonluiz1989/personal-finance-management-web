@@ -3,14 +3,30 @@ import AppFormInputCurrency from "@/app/components/form/input-curreny/app-form-i
 import AppModal from "@/app/components/modal/app-modal.component.vue";
 import AppValidationMessages from "@/app/components/validation-messages/app-validation-messages.component.vue";
 import { Installment } from "@/installments/installment.model";
-import { computed, defineExpose, onMounted, ref } from "vue";
+import {
+  computed,
+  defineExpose,
+  defineProps,
+  onMounted,
+  withDefaults,
+} from "vue";
 import { TransactionsFormStrings as FormStrings } from "../../transactions.strings";
 import TransactionsFormInstallments from "./installments/transactions-form-installments.component.vue";
 import { TransactionsFormEventsService } from "./services/transactions-form-events.service";
 import { TransactionsFormService } from "./services/transactions-form.service";
 import { calculateAmountLimitByList } from "@/transactions/transactions.helpers";
+import { Reference } from "@/app/helpers/Reference";
+import { extractDateFormDateTime } from "@/app/helpers/helpers";
 
-const form = new TransactionsFormService();
+type TransactionsFormPropsType = {
+  date?: string;
+};
+
+const props = withDefaults(defineProps<TransactionsFormPropsType>(), {
+  date: extractDateFormDateTime(new Date()),
+});
+
+const form = new TransactionsFormService(props.date);
 const events = new TransactionsFormEventsService(form);
 
 const modalTitle = computed((): string => form.getModalTitle());
@@ -45,7 +61,9 @@ const onSearch = (appendData: boolean) => events.searchInstallments(appendData);
 const onSelectInstallments = (installments: Installment[]) =>
   events.validateIfAllowAddInstallments(installments);
 
-onMounted(async (): Promise<void> => await form.populateUsers());
+onMounted(async (): Promise<void> => {
+  await form.populateUsers();
+});
 
 defineExpose({ showModal });
 </script>
