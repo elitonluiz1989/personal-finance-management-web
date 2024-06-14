@@ -67,11 +67,21 @@ const onkeyup = (evt: Event) => {
     type="number"
     class="form-control"
     form-field="installmentsNumber"
+    :disabled="props.disabled"
+    @focus="onFocus"
+    @keyup="onkeyup"
+    v-if="isNaN(min) && isNaN(max)"
+  />
+
+  <input
+    type="number"
+    class="form-control"
+    form-field="installmentsNumber"
     :min="min"
     :disabled="props.disabled"
     @focus="onFocus"
     @keyup="onkeyup"
-    v-if="isValidNumber(min) && isValidNumber(max) === false"
+    v-if="isValidNumber(min) && isNaN(max)"
   />
 
   <input
@@ -82,7 +92,7 @@ const onkeyup = (evt: Event) => {
     :disabled="props.disabled"
     @focus="onFocus"
     @keyup="onkeyup"
-    v-if="isValidNumber(min) === false && isValidNumber(max)"
+    v-if="isNaN(min) && isValidNumber(max)"
   />
 
   <input

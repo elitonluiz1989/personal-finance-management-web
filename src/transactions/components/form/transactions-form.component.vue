@@ -15,7 +15,6 @@ import TransactionsFormInstallments from "./installments/transactions-form-insta
 import { TransactionsFormEventsService } from "./services/transactions-form-events.service";
 import { TransactionsFormService } from "./services/transactions-form.service";
 import { calculateAmountLimitByList } from "@/transactions/transactions.helpers";
-import { Reference } from "@/app/helpers/Reference";
 import { extractDateFormDateTime } from "@/app/helpers/helpers";
 
 type TransactionsFormPropsType = {
@@ -69,9 +68,7 @@ defineExpose({ showModal });
 </script>
 
 <template>
-  <button class="btn btn-primary" @click="showModalHandler">
-    {{ FormStrings.addTransaction }}
-  </button>
+  <slot :handler="showModalHandler"></slot>
 
   <AppModal
     :show="form.show.value"

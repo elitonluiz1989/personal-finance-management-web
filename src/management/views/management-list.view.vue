@@ -1,17 +1,26 @@
 <script setup lang="ts">
-import { StoreHelper } from "@/app/store/store.helper";
-import {
-  ManagementStrings as Strings,
-  ManagementStoreStrings as StoreStrings,
-} from "../management.strings";
+import { ManagementStrings as Strings } from "../management.strings";
 import { ComputedRef, computed, onMounted } from "vue";
 import { Management } from "../models/management.model";
 import TransactionForm from "@/transactions/components/form/transactions-form.component.vue";
 import { ManagementService } from "../management.service";
+import { TransactionsFormStrings as TransactionsStrings } from "@/transactions/transactions.strings";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const service = new ManagementService();
-
 const managementData: ComputedRef<Management[]> = computed(service.getData);
+const managementsRecorded: ComputedRef<boolean> = computed(() =>
+  managementData.value.every((p) => p.isRecorded)
+);
+const saveText = computed(() =>
+  managementsRecorded.value ? Strings.updateAll : Strings.saveAll
+);
+const saveStyles = computed(() =>
+  managementsRecorded.value ? "btn btn-danger ms-2" : "btn btn-success ms-2"
+);
+
+const getSaveText = (recorded: boolean) =>
+  recorded ? Strings.update : Strings.save;
 
 onMounted(async (): Promise<void> => await service.search());
 </script>
@@ -26,6 +35,10 @@ onMounted(async (): Promise<void> => await service.search());
           :value="service.reference.stringValue"
           @change="service.onChangeReference"
         />
+
+        <button :class="saveStyles" @click="async () => await service.save()">
+          {{ saveText }}
+        </button>
 
         <button class="btn btn-primary ms-2" @click="service.search">
           {{ Strings.reload }}
@@ -81,12 +94,6 @@ onMounted(async (): Promise<void> => await service.search());
                 }}
               </td>
             </tr>
-
-            <tr class="border-bottom border-dark text-center">
-              <td class="justify-content-evenly py-1" colspan="3">
-                <TransactionForm :date="service.reference.stringValue" />
-              </td>
-            </tr>
           </tbody>
 
           <tfoot>
@@ -95,7 +102,7 @@ onMounted(async (): Promise<void> => await service.search());
                 class="px-2 border-end border-dark text-end fw-bolder"
                 colspan="2"
               >
-                Total
+                {{ Strings.total }}
               </td>
 
               <td :class="service.getAmountStyle(management.total?.type)">
@@ -105,6 +112,34 @@ onMounted(async (): Promise<void> => await service.search());
                     management.total?.type
                   )
                 }}
+              </td>
+            </tr>
+
+            <tr class="border-bottom bg-dark text-center">
+              <td colspan="3">
+                <TransactionForm
+                  :date="service.reference.stringValue"
+                  v-slot="{ handler }"
+                >
+                  <button
+                    class="btn text-white"
+                    :title="TransactionsStrings.addTransaction"
+                    @click="handler"
+                  >
+                    <FontAwesomeIcon
+                      icon="fa-solid fa-money-bill-transfer"
+                      size="2x"
+                    />
+                  </button>
+                </TransactionForm>
+
+                <button
+                  class="btn ms-3 text-white"
+                  :title="getSaveText(management.isRecorded)"
+                  @click="async () => await service.save(management.user?.id)"
+                >
+                  <FontAwesomeIcon icon="fa-solid fa-floppy-disk" size="2x" />
+                </button>
               </td>
             </tr>
           </tfoot>

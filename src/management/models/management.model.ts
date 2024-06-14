@@ -5,9 +5,14 @@ import { IIndexable } from "@/app/types";
 import { mapFrom } from "@/app/helpers/helpers";
 
 export class Management {
+  public id = 0;
   public user?: User;
   public items: ManagementItem[] = [];
   public total: ManagementTotal | undefined;
+
+  get isRecorded(): boolean {
+    return +this.id > 0;
+  }
 
   public static createFrom<TData extends IIndexable<any>>(
     data: TData

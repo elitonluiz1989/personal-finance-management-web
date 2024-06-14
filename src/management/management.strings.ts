@@ -6,6 +6,11 @@ export class ManagementStrings {
   public static insertionDate = "Insertion Date";
   public static description = "Description";
   public static value = "Value";
+  public static save = "Save";
+  public static saveAll = "Save all";
+  public static update = "Update";
+  public static updateAll = "Update all";
+  public static total = "Total";
 }
 
 export class ManagementStoreStrings {
@@ -24,5 +29,10 @@ export class ManagementStoreStrings {
   public static actionList = createStoreResourceItem(
     ManagementStoreStrings.namespace,
     "list"
+  );
+
+  public static actionSave = createStoreResourceItem(
+    ManagementStoreStrings.namespace,
+    "save"
   );
 }

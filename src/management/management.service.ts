@@ -8,6 +8,7 @@ import {
 } from "@/app/helpers/helpers";
 import { BalanceTypeEnum } from "@/balances/balances-type.enum";
 import { Management } from "./models/management.model";
+import { ManagementStoreFilter } from "./models/management-store.filter";
 
 export class ManagementService {
   public reference: Reference;
@@ -61,5 +62,14 @@ export class ManagementService {
     if (type === BalanceTypeEnum.credit) return "px-2 text-end text-success";
 
     return "px-2 text-end text-danger";
+  }
+
+  public async save(userId?: number | undefined): Promise<void> {
+    const filter: ManagementStoreFilter = {
+      reference: this.reference.numberValue,
+      userId: userId,
+    };
+
+    await StoreHelper.dispatch(StoreStrings.actionSave.namespaced, filter);
   }
 }

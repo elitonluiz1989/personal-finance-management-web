@@ -37,7 +37,11 @@ onMounted(
   <div class="container-fluid">
     <div class="row">
       <div class="col-12 d-flex justify-content-end">
-        <TransactionForm ref="form" />
+        <TransactionForm ref="form" v-slot="{ handler }">
+          <button class="btn btn-primary" @click="handler">
+            {{ FormStrings.addTransaction }}
+          </button>
+        </TransactionForm>
       </div>
     </div>
 

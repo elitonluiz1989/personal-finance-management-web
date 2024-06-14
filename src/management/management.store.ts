@@ -4,6 +4,7 @@ import { State } from "@/app/store/types";
 import { ManagementStoreStrings as Strings } from "./management.strings";
 import axios from "axios";
 import { Management } from "./models/management.model";
+import { ManagementStoreFilter } from "./models/management-store.filter";
 
 export const management: Module<ManagementState, State> = {
   namespaced: true,
@@ -39,11 +40,23 @@ export const management: Module<ManagementState, State> = {
   },
 
   actions: {
-    async [Strings.actionList.value]({ commit }, payload: string) {
+    async [Strings.actionList.value](
+      { commit },
+      payload: string
+    ): Promise<void> {
       const result = await axios.get<Management[]>(`Management/${payload}`);
       const items = result?.data ?? [];
 
       commit(Strings.setterAddItems.value, items);
+    },
+
+    async [Strings.actionSave.value](
+      { dispatch },
+      payload: ManagementStoreFilter
+    ): Promise<void> {
+      await axios.post(`Management`, payload);
+
+      dispatch(Strings.actionList.value, payload.reference);
     },
   },
 };

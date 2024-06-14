@@ -9,6 +9,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faAngleUp as fasAngleUp,
   faAngleDown as fasAngleDown,
+  faFloppyDisk as fasFloppyDisk,
   faMoneyBillTransfer as fasMoneyBillTransfer,
   faTrashCan as fasTrashCan,
   faCaretUp as fasCaretUp,
@@ -21,6 +22,7 @@ import {
 library.add(
   fasAngleUp,
   fasAngleDown,
+  fasFloppyDisk,
   fasMoneyBillTransfer,
   fasTrashCan,
   fasCaretUp,

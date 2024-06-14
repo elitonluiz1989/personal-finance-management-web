@@ -113,10 +113,12 @@ export function getEventTarget<T extends EventTarget>(evt: Event): T {
   return target as T;
 }
 
-export function extractDateFormDateTime(date: Date | undefined): string {
+export function extractDateFormDateTime(
+  date: Date | string | undefined
+): string {
   if (!date) return "";
 
-  const rawDate = isString(date) ? new Date(date) : date;
+  const rawDate: Date = isString(date) ? new Date(date) : (date as Date);
 
   return rawDate.toISOString().split("T")[0];
 }
