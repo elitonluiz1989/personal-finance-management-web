@@ -55,8 +55,6 @@ export const management: Module<ManagementState, State> = {
       payload: ManagementStoreFilter
     ): Promise<void> {
       await axios.post(`Management`, payload);
-
-      dispatch(Strings.actionList.value, payload.reference);
     },
   },
 };

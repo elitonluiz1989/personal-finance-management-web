@@ -3,9 +3,11 @@ import { ManagementItem } from "./management-item.model";
 import { ManagementTotal } from "./management-total.model";
 import { IIndexable } from "@/app/types";
 import { mapFrom } from "@/app/helpers/helpers";
+import { ManagementStatusEnum } from "../management-status.enum";
 
 export class Management {
   public id = 0;
+  public status: ManagementStatusEnum = ManagementStatusEnum.Unsaved;
   public user?: User;
   public items: ManagementItem[] = [];
   public total: ManagementTotal | undefined;

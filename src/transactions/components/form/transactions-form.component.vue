@@ -5,6 +5,7 @@ import AppValidationMessages from "@/app/components/validation-messages/app-vali
 import { Installment } from "@/installments/installment.model";
 import {
   computed,
+  defineEmits,
   defineExpose,
   defineProps,
   onMounted,
@@ -20,10 +21,14 @@ import { extractDateFormDateTime } from "@/app/helpers/helpers";
 type TransactionsFormPropsType = {
   date?: string;
 };
+type TransactionsFormEmitsType = {
+  (e: "onSave"): void;
+};
 
 const props = withDefaults(defineProps<TransactionsFormPropsType>(), {
   date: extractDateFormDateTime(new Date()),
 });
+const emits = defineEmits<TransactionsFormEmitsType>();
 
 const form = new TransactionsFormService(props.date);
 const events = new TransactionsFormEventsService(form);
@@ -59,6 +64,11 @@ const amoutLimit = computed((): number => {
 const onSearch = (appendData: boolean) => events.searchInstallments(appendData);
 const onSelectInstallments = (installments: Installment[]) =>
   events.validateIfAllowAddInstallments(installments);
+const save = (): void => {
+  form.submit();
+
+  emits("onSave");
+};
 
 onMounted(async (): Promise<void> => {
   await form.populateUsers();
@@ -77,7 +87,7 @@ defineExpose({ showModal });
     :footer="form.modalFooterConfig"
     @on-close="closeModal"
     @on-reset="() => events.reset()"
-    @on-save.prevent="() => form.submit()"
+    @on-save.prevent="save"
   >
     <div class="container-fluid">
       <div class="form-group row">

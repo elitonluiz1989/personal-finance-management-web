@@ -6,11 +6,16 @@ export class ManagementStrings {
   public static insertionDate = "Insertion Date";
   public static description = "Description";
   public static value = "Value";
+  public static actions = "Actions";
   public static save = "Save";
   public static saveAll = "Save all";
   public static update = "Update";
   public static updateAll = "Update all";
   public static total = "Total";
+  public static unsaved = "Unsaved";
+  public static updated = "Updated";
+  public static outdated = "Outdated";
+  public static userNotFound = "User not found";
 }
 
 export class ManagementStoreStrings {
