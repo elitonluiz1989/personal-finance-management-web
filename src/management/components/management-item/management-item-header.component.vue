@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed, defineProps, withDefaults } from "vue";
+import { computed, defineProps, inject, withDefaults } from "vue";
 import { ManagementStrings as Strings } from "../../management.strings";
 import { ManagementStatusEnum } from "@/management/management-status.enum";
 import AppBadge from "@/app/components/bagde/app-badge.component.vue";
-import { BootstrapColorsEnum } from "@/app/enums/BootstrapColorsEnum.enum";
+import { BootstrapColorsEnum } from "@/app/enums/bootstrap-colors.enum";
+import { ManagementService } from "@/management/management.service";
+import { User } from "@/users/user.model";
 
 type ManagementItemHeaderPropsType = {
   status: ManagementStatusEnum;
-  userName?: string;
+  user: User;
 };
 
 const props = withDefaults(defineProps<ManagementItemHeaderPropsType>(), {
@@ -15,14 +17,13 @@ const props = withDefaults(defineProps<ManagementItemHeaderPropsType>(), {
   userName: Strings.userNotFound,
 });
 
-const badgeColor = computed((): BootstrapColorsEnum => {
-  if (props.status === ManagementStatusEnum.Updated)
-    return BootstrapColorsEnum.danger;
+const service = inject<ManagementService>("ManagementService");
 
+const badgeColor = computed((): BootstrapColorsEnum => {
   if (props.status === ManagementStatusEnum.Outdated)
     return BootstrapColorsEnum.warning;
 
-  return BootstrapColorsEnum.success;
+  return BootstrapColorsEnum.primary;
 });
 
 const badgeText = computed((): string => {
@@ -32,16 +33,38 @@ const badgeText = computed((): string => {
 
   return Strings.unsaved;
 });
+
+const recordBtnStyles = computed((): string => {
+  if (props.status === ManagementStatusEnum.Unsaved)
+    return "btn btn-success px-2 py-1";
+
+  return "btn btn-danger px-2 py-1";
+});
+
+const recordBtnText = computed((): string => {
+  if (props.status === ManagementStatusEnum.Unsaved) return Strings.save;
+
+  return Strings.update;
+});
 </script>
 
 <template>
-  <tr>
-    <th class="bg-dark text-white text-center" colspan="3">
-      <div class="d-flex justify-content-between px-1 py-2">
-        <span>{{ userName }}</span>
+  <tr class="bg-dark">
+    <th class="px-1 py-2 text-white" colspan="2">
+      {{ user.name }}
+    </th>
 
-        <AppBadge :color="badgeColor" :text="badgeText" :fit-content="true" />
-      </div>
+    <th class="px-1 py-2">
+      <button
+        :class="recordBtnStyles"
+        @click="async () => await service?.save(user.id)"
+      >
+        {{ recordBtnText }}
+      </button>
+    </th>
+
+    <th class="px-1 py-2">
+      <AppBadge :color="badgeColor" :text="badgeText" :fit-content="true" />
     </th>
   </tr>
 
@@ -56,6 +79,10 @@ const badgeText = computed((): string => {
 
     <th class="bg-secondary text-white text-center">
       {{ Strings.value }}
+    </th>
+
+    <th class="bg-secondary text-white text-center">
+      {{ Strings.actions }}
     </th>
   </tr>
 </template>

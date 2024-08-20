@@ -26,6 +26,10 @@ export class Reference {
     return this._date;
   }
 
+  get dateStringValue(): string {
+    return this.stringValue + "-01";
+  }
+
   public static CreateFromString(value: string): Reference | undefined {
     const date = createDateFromString(value);
 

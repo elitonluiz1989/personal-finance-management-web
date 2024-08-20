@@ -18,6 +18,7 @@ import {
   faCircle as fasCircle,
   faCircleExclamation as fasCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
+import { faSquarePlus as farSquarePlus } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
   fasAngleUp,
@@ -29,7 +30,8 @@ library.add(
   fasPLus,
   fasPen,
   fasCircle,
-  fasCircleExclamation
+  fasCircleExclamation,
+  farSquarePlus
 );
 
 createApp(App).use(store, storeKey).use(router).mount("#app");

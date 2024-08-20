@@ -2,7 +2,7 @@
 import { defineProps } from "vue";
 import AppBadge from "@/app/components/bagde/app-badge.component.vue";
 import { InstallmentStatusEnum } from "@/installments/installment-status.enum";
-import { BootstrapColorsEnum } from "@/app/enums/BootstrapColorsEnum.enum";
+import { BootstrapColorsEnum } from "@/app/enums/bootstrap-colors.enum";
 
 type BalanceCardInstallmentsBadgeProp = {
   status: InstallmentStatusEnum;

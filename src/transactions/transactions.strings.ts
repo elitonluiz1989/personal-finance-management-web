@@ -12,6 +12,7 @@ export class TransactionsFormStrings {
   public static installments = "Installments";
 
   public static addTransaction = "Add transaction";
+  public static addTransactionCredit = "Add transaction from credit";
   public static loadMore = "Load more";
   public static amoutSelectedInstallments = "Amount of selected installments:";
   public static transactionNotFound = "Trasanction not found";

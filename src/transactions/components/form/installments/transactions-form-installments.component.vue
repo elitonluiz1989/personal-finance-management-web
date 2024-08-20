@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppBadge from "@/app/components/bagde/app-badge.component.vue";
-import { BootstrapColorsEnum } from "@/app/enums/BootstrapColorsEnum.enum";
+import { BootstrapColorsEnum } from "@/app/enums/bootstrap-colors.enum";
 import { CurrencyFormatterStatic } from "@/app/helpers/currency-formatter";
 import InstallmentBadge from "@/installments/components/installment-badge.component.vue";
 import { Installment } from "@/installments/installment.model";

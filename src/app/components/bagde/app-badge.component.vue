@@ -2,7 +2,7 @@
 import {
   BootstrapColorsEnum,
   getBootstrapColorsEnumDescription,
-} from "@/app/enums/BootstrapColorsEnum.enum";
+} from "@/app/enums/bootstrap-colors.enum";
 import { computed, defineProps, withDefaults } from "vue";
 
 type AppBadgeProps = {

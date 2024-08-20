@@ -13,8 +13,9 @@ export class ManagementHelper {
   }
 
   public static getAmountStyle(type?: BalanceTypeEnum): string {
-    if (type === BalanceTypeEnum.credit) return "px-2 text-end text-success";
+    if (type === BalanceTypeEnum.credit)
+      return "px-2 border-end border-dark text-end text-success";
 
-    return "px-2 text-end text-danger";
+    return "px-2 border-end border-dark text-end text-danger";
   }
 }

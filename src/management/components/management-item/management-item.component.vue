@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { defineProps, inject, onMounted } from "vue";
 import { Management } from "../../models/management.model";
 import ManagementItemHeader from "./management-item-header.component.vue";
 import ManagementItemContent from "./management-item-content.component.vue";
 import ManagementItemTotal from "./management-item-total.component.vue";
-import ManagementItemActions from "./management-item-actions.component.vue";
+import { ManagementStrings as Strings } from "@/management/management.strings";
+import { TransactionsFormStrings } from "@/transactions/transactions.strings";
+import { ManagementService } from "@/management/management.service";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import TransactionForm from "@/transactions/components/form/transactions-form.component.vue";
 
 type ManagementItemPropsType = {
   management: Management;
 };
 
-defineProps<ManagementItemPropsType>();
+const props = defineProps<ManagementItemPropsType>();
+const service = inject<ManagementService>("ManagementService");
+const userId = props.management.user!.id;
 </script>
 
 <template>
-  <table class="table border border-dark">
+  <table class="table border border-dark" v-if="management.user">
     <thead>
       <management-item-header
         :status="management.status"
-        :user-name="management.user?.name"
+        :user="management.user"
       />
     </thead>
 
@@ -28,17 +34,41 @@ defineProps<ManagementItemPropsType>();
         v-for="(item, index) in management.items"
         :key="index"
       >
-        <management-item-content :content="item" />
+        <management-item-content :user-id="userId" :content="item" />
+      </tr>
+
+      <tr class="border-bottom border-dark text-end">
+        <td class="px-2 border-end border-dark text-end" colspan="3">
+          {{ TransactionsFormStrings.addTransaction }}
+        </td>
+
+        <td class="px-2 border-end border-dark text-center">
+          <TransactionForm
+            :date="service?.reference.dateStringValue"
+            @on-close="async (): Promise<void> => await service?.save(userId)"
+            v-slot="{ handler }"
+          >
+            <button
+              class="border-0 bg-transparent"
+              :title="TransactionsFormStrings.addTransaction"
+              @click="handler"
+            >
+              <FontAwesomeIcon icon="fa-regular fa-square-plus" />
+            </button>
+          </TransactionForm>
+        </td>
       </tr>
     </tbody>
 
     <tfoot>
-      <management-item-total :total="management.total!" />
-
-      <management-item-actions
-        :user-id="management.user!.id"
-        :is-recorded="management.isRecorded"
+      <management-item-total
+        :total="management.total"
+        v-if="management.total"
       />
     </tfoot>
   </table>
+
+  <div class="d-flex justify-content-center" v-else>
+    <p>{{ Strings.userNotFound }}</p>
+  </div>
 </template>
