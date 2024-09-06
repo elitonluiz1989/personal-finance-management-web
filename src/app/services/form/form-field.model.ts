@@ -65,7 +65,7 @@ export class FormField<T> {
     );
   }
 
-  public markAsInvalid() {
+  public markAsInvalid(): void {
     this._invalid.value = true;
 
     if (!this.element || this.isMarked()) return;
@@ -73,7 +73,7 @@ export class FormField<T> {
     this.element?.classList.add("is-invalid");
   }
 
-  public markAsValid() {
+  public markAsValid(): void {
     this._invalid.value = false;
 
     if (!this.element || this.isMarked() === false) return;
@@ -81,27 +81,33 @@ export class FormField<T> {
     this.element?.classList?.remove("is-invalid");
   }
 
-  public enable() {
+  public enable(): void {
     this._disabled.value = false;
   }
 
-  public disable() {
+  public disable(): void {
     this._disabled.value = true;
   }
 
-  public clearValidation() {
+  public clearValidation(): void {
     this.markAsValid();
   }
 
-  public reset() {
+  public reset(): void {
     this._model.value = this._initialValue;
   }
 
-  private setElement() {
+  public fill(value: T): void {
+    this._initialValue = value;
+
+    this.reset();
+  }
+
+  private setElement(): void {
     this._element = document.querySelector(`[form-field="${this._field}"]`);
   }
 
-  private isMarked() {
+  private isMarked(): boolean {
     return this.element?.classList?.contains("is-invalid") ?? false;
   }
 }

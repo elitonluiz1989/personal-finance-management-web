@@ -37,21 +37,23 @@ export class TransactionFormFields extends FormFields {
   }
 
   public populate(transaction: Transaction): void {
-    this.id.model.value = transaction.id;
-    this.date.model.value = extractDateFormDateTime(transaction.date);
-    this.amount.model.value = transaction.amount;
-    this.userId.model.value = transaction.userId;
-    this.type.model.value = transaction.type;
+    this.id.fill(transaction.id);
+    this.date.fill(extractDateFormDateTime(transaction.date));
+    this.amount.fill(transaction.amount);
+    this.userId.fill(transaction.userId);
+    this.type.fill(transaction.type);
 
     if (transaction.items?.length === 0) return;
 
-    this.installments.value = [];
+    const installments = [];
 
     for (const item of transaction.items) {
       if (!item.installment) continue;
 
-      this.installments.value.push(item.installment);
+      installments.push(item.installment);
     }
+
+    this.installments.fill(installments);
   }
 
   public createStoreDto(): TransactionStoreDto {

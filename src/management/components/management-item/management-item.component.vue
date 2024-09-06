@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, inject, onMounted } from "vue";
+import { defineProps, inject, onMounted, reactive } from "vue";
 import { Management } from "../../models/management.model";
 import ManagementItemHeader from "./management-item-header.component.vue";
 import ManagementItemContent from "./management-item-content.component.vue";
@@ -9,6 +9,7 @@ import { TransactionsFormStrings } from "@/transactions/transactions.strings";
 import { ManagementService } from "@/management/management.service";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import TransactionForm from "@/transactions/components/form/transactions-form.component.vue";
+import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
 
 type ManagementItemPropsType = {
   management: Management;
@@ -16,7 +17,12 @@ type ManagementItemPropsType = {
 
 const props = defineProps<ManagementItemPropsType>();
 const service = inject<ManagementService>("ManagementService");
-const userId = props.management.user!.id;
+const formData = reactive<TransactionBasicDto>(new TransactionBasicDto());
+
+onMounted(() => {
+  formData.userId = props.management.user!.id;
+  formData.date = service?.reference.value;
+});
 </script>
 
 <template>
@@ -34,7 +40,7 @@ const userId = props.management.user!.id;
         v-for="(item, index) in management.items"
         :key="index"
       >
-        <management-item-content :user-id="userId" :content="item" />
+        <management-item-content :user-id="formData.userId" :content="item" />
       </tr>
 
       <tr class="border-bottom border-dark text-end">
@@ -44,8 +50,8 @@ const userId = props.management.user!.id;
 
         <td class="px-2 border-end border-dark text-center">
           <TransactionForm
-            :date="service?.reference.dateStringValue"
-            @on-close="async (): Promise<void> => await service?.save(userId)"
+            :data="formData"
+            @on-close="service?.save(formData.userId)"
             v-slot="{ handler }"
           >
             <button

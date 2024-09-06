@@ -1,10 +1,6 @@
-import { TransactionTypeEnum } from "../enums/transaction-type.enum";
+import { TransactionBasicDto } from "./transaction-basic.dto";
 
-export class TransactionStoreDto {
+export class TransactionStoreDto extends TransactionBasicDto {
   public id = 0;
-  public userId = 0;
-  public type: TransactionTypeEnum | undefined = undefined;
-  public date: Date | undefined = undefined;
-  public amount = 0;
   public installmentsIds: number[] = [];
 }

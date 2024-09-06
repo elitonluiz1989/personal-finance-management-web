@@ -9,6 +9,7 @@ import {
   defineExpose,
   defineProps,
   onMounted,
+  watch,
   withDefaults,
 } from "vue";
 import { TransactionsFormStrings as FormStrings } from "../../transactions.strings";
@@ -17,12 +18,16 @@ import { TransactionsFormEventsService } from "./services/transactions-form-even
 import { TransactionsFormService } from "./services/transactions-form.service";
 import { calculateAmountLimitByList } from "@/transactions/transactions.helpers";
 import { extractDateFormDateTime } from "@/app/helpers/helpers";
+import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
+import { Transaction } from "@/transactions/models/transaction.model";
 
 type TransactionsFormPropsType = {
   date?: string;
+  data?: TransactionBasicDto;
 };
 type TransactionsFormEmitsType = {
   (e: "onSave"): void;
+  (e: "onClose"): void;
 };
 
 const props = withDefaults(defineProps<TransactionsFormPropsType>(), {
@@ -48,7 +53,11 @@ const showModal = async (id = 0): Promise<void> => {
   await form.fillForByTransactionId(id);
 };
 const showModalHandler = async (): Promise<void> => await showModal();
-const closeModal = (): void => events.closeModalHandler();
+const closeModal = (): void => {
+  events.closeModalHandler();
+
+  emits("onClose");
+};
 
 form.setBeforeSubmitHandler(closeModal);
 
@@ -72,7 +81,18 @@ const save = (): void => {
 
 onMounted(async (): Promise<void> => {
   await form.populateUsers();
+
+  if (props.data instanceof TransactionBasicDto) {
+    const transaction = Transaction.createFrom<TransactionBasicDto>(props.data);
+
+    form.fields.populate(transaction);
+  }
 });
+
+watch(
+  () => props.data,
+  (data) => console.log(data)
+);
 
 defineExpose({ showModal });
 </script>
