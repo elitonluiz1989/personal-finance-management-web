@@ -21,6 +21,8 @@ export class TransactionStateService {
   public static async findTransaction(
     id: number
   ): Promise<Transaction | undefined> {
+    await StoreHelper.dispatch(StoreStrings.actionFind.namespaced, id);
+
     return StoreHelper.getWithParameters<Transaction | undefined, number>(
       StoreStrings.getterTransaction.namespaced,
       id,

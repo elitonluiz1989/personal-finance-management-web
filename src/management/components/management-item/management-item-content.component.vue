@@ -16,7 +16,6 @@ type ManagementItemContentPropsType = {
 };
 
 const props = defineProps<ManagementItemContentPropsType>();
-const formData = reactive<TransactionBasicDto>(new TransactionBasicDto());
 const service = inject<ManagementService>("ManagementService");
 
 const isRemaininValue = (type: ManagementItemTypeEnum): boolean =>
@@ -24,14 +23,6 @@ const isRemaininValue = (type: ManagementItemTypeEnum): boolean =>
 
 const isTransaction = (type: ManagementItemTypeEnum): boolean =>
   type === ManagementItemTypeEnum.transaction;
-
-onMounted(() => {
-  formData.id = props.content.id;
-  formData.userId = props.userId;
-  formData.date = new Date(props.content.date);
-  formData.type = +props.content.type as TransactionTypeEnum;
-  formData.amount = props.content.amount?.value ?? 0;
-});
 </script>
 
 <template>
@@ -49,7 +40,6 @@ onMounted(() => {
 
   <td class="px-2 border-end border-dark text-center">
     <TransactionForm
-      :data="formData"
       @on-close="service?.save(content.id)"
       v-slot="{ handler }"
       v-if="isRemaininValue(content.managementType)"
@@ -72,7 +62,7 @@ onMounted(() => {
       <button
         class="border-0 bg-transparent"
         :title="TransactionsStrings.addTransaction"
-        @click="handler"
+        @click="handler(props.content.id)"
       >
         <FontAwesomeIcon icon="fa-solid fa-pencil" />
       </button>

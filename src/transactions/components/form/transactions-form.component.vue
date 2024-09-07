@@ -20,6 +20,7 @@ import { calculateAmountLimitByList } from "@/transactions/transactions.helpers"
 import { extractDateFormDateTime } from "@/app/helpers/helpers";
 import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
 import { Transaction } from "@/transactions/models/transaction.model";
+import { TransactionFormsOpenAction } from "@/transactions/transaction.types.ts";
 
 type TransactionsFormPropsType = {
   date?: string;
@@ -40,7 +41,7 @@ const events = new TransactionsFormEventsService(form);
 
 const modalTitle = computed((): string => form.getModalTitle());
 
-const showModal = async (id = 0): Promise<void> => {
+const openForm: TransactionFormsOpenAction = async (id = 0): Promise<void> => {
   form.show.value = true;
 
   if (isNaN(id) || id === 0) {
@@ -52,7 +53,6 @@ const showModal = async (id = 0): Promise<void> => {
 
   await form.fillForByTransactionId(id);
 };
-const showModalHandler = async (): Promise<void> => await showModal();
 const closeModal = (): void => {
   events.closeModalHandler();
 
@@ -89,16 +89,11 @@ onMounted(async (): Promise<void> => {
   }
 });
 
-watch(
-  () => props.data,
-  (data) => console.log(data)
-);
-
-defineExpose({ showModal });
+defineExpose({ openForm });
 </script>
 
 <template>
-  <slot :handler="showModalHandler"></slot>
+  <slot :handler="openForm"></slot>
 
   <AppModal
     :show="form.show.value"

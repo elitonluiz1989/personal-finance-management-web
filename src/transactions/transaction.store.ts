@@ -54,7 +54,7 @@ export const transactions: Module<TransactionStore, State> = {
       if (state.transactions[key]) {
         state.transactions[key] = transaction;
       } else {
-        state.transactions.push(payload);
+        state.transactions.push(transaction);
       }
     },
   },

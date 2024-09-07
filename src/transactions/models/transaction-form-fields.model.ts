@@ -43,7 +43,7 @@ export class TransactionFormFields extends FormFields {
     this.userId.fill(transaction.userId);
     this.type.fill(transaction.type);
 
-    if (transaction.items?.length === 0) return;
+    if (!transaction.items || transaction.items?.length === 0) return;
 
     const installments = [];
 

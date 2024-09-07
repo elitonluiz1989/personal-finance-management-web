@@ -16,7 +16,7 @@ const transactions = computed(() =>
 );
 
 const editTransactionHandler = async (transactionId: number): Promise<void> =>
-  form.value?.showModal(transactionId);
+  form.value?.openForm(transactionId);
 const removeTransactionHandler = async (
   transactionId: number
 ): Promise<void> => {
