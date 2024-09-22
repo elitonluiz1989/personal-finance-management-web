@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ManagementStrings as Strings } from "../management.strings";
-import { ComputedRef, computed, onMounted, provide, ref } from "vue";
+import { ComputedRef, computed, defineProps, onMounted, ref } from "vue";
 import { Management } from "../models/management.model";
 import { ManagementService } from "../management.service";
 import ManagementActions from "../components/management-actions.component.vue";
@@ -8,9 +8,17 @@ import ManagementItem from "../components/management-item/management-item.compon
 import TransactionForm from "@/transactions/components/form/transactions-form.component.vue";
 import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
 import { TransactionFormsOpenAction } from "@/transactions/transaction.types";
+import { Reference } from "@/app/helpers/Reference";
 
+type ManagementListPropsType = {
+  reference?: string;
+};
+
+const props = defineProps<ManagementListPropsType>();
 const transactionForm = ref<InstanceType<typeof TransactionForm> | null>(null);
-const service = new ManagementService();
+
+const reference = Reference.createOrDefault(props.reference, new Date());
+const service = new ManagementService(reference);
 
 const managements: ComputedRef<Management[]> = computed(service.getData);
 const allManagementsRecorded: ComputedRef<boolean> = computed(
@@ -25,8 +33,6 @@ const openForm: TransactionFormsOpenAction = async (
 const reload = async (): Promise<void> => await service.search();
 
 onMounted(async (): Promise<void> => await service.search());
-
-provide("ManagementService", service);
 </script>
 
 <template>

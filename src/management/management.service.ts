@@ -12,8 +12,8 @@ import { ManagementStoreFilter } from "./models/management-store.filter";
 export class ManagementService {
   public reference: Reference;
 
-  constructor() {
-    this.reference = new Reference(new Date("2021-10-01T00:00:00"));
+  constructor(reference: Reference) {
+    this.reference = reference;
   }
 
   public async search(): Promise<void> {

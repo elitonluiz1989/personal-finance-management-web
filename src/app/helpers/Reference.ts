@@ -30,12 +30,24 @@ export class Reference {
     return this.stringValue + "-01";
   }
 
-  public static CreateFromString(value: string): Reference | undefined {
+  public static create(value: string): Reference | undefined {
     const date = createDateFromString(value);
 
     if (!isDate(date)) {
       return undefined;
     }
+
+    return new Reference(date);
+  }
+
+  public static createOrDefault(
+    value: string | undefined,
+    defaultValue: Date
+  ): Reference {
+    if (!value) return new Reference(defaultValue);
+
+    const dateCreated = createDateFromString(value);
+    const date = isDate(dateCreated) ? dateCreated : defaultValue;
 
     return new Reference(date);
   }

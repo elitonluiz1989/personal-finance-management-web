@@ -5,12 +5,13 @@ import ManagementView from "@/management/views/management-list.view.vue";
 
 export const ManagementRoutes: RouteRecordRaw[] = [
   {
-    path: "/",
+    path: "/management/:reference?",
     name: "management",
     component: ManagementView,
     meta: {
       authorized: [UserRoleEnum.administrator],
     },
     beforeEnter: [authenticationGuard],
+    props: true,
   },
 ];

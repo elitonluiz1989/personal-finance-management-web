@@ -33,7 +33,7 @@ export class TransactionFormFields extends FormFields {
   }
 
   get reference(): Reference | undefined {
-    return Reference.CreateFromString(this.date.value);
+    return Reference.create(this.date.value);
   }
 
   public populate(transaction: Transaction): void {

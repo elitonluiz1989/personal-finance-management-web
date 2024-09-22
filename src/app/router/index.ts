@@ -6,6 +6,10 @@ import { TransactionsRoutes } from "@/transactions/transaction.routes";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
+  {
+    path: "/",
+    redirect: { name: "management" },
+  },
   ...ManagementRoutes,
   ...AuthenticationRoutes,
   ...BalancesRoutes,
