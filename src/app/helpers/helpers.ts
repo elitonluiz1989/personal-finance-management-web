@@ -113,7 +113,7 @@ export function getEventTarget<T extends EventTarget>(evt: Event): T {
   return target as T;
 }
 
-export function extractDateFormDateTime(
+export function extractDateFromDateTime(
   date: Date | string | undefined
 ): string {
   if (!date) return "";

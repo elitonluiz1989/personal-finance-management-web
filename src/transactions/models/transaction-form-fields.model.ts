@@ -1,6 +1,6 @@
 import { Installment } from "@/installments/installment.model";
 import { TransactionsFormStrings as FormStrings } from "../transactions.strings";
-import { extractDateFormDateTime } from "@/app/helpers/helpers";
+import { extractDateFromDateTime } from "@/app/helpers/helpers";
 import { FormField } from "@/app/services/form/form-field.model";
 import { FormFields } from "@/app/services/form/form-fields.model";
 import { Transaction } from "./transaction.model";
@@ -16,11 +16,11 @@ export class TransactionFormFields extends FormFields {
   public type: FormField<number>;
   public installments: FormField<Installment[]>;
 
-  constructor(date: string) {
+  constructor() {
     super();
 
     this.id = this.createFormField(FormStrings.id, 0);
-    this.date = this.createFormFieldRequired<string>(FormStrings.date, date);
+    this.date = this.createFormFieldRequired<string>(FormStrings.date, "");
     this.amount = this.createFormFieldRequired<number>(FormStrings.amount, 0);
     this.userId = this.createFormFieldRequired<number>(FormStrings.user, 0);
     this.type = this.createFormFieldRequired<number>(FormStrings.type, 0);
@@ -37,13 +37,19 @@ export class TransactionFormFields extends FormFields {
   }
 
   public populate(transaction: Transaction): void {
-    this.id.fill(transaction.id);
-    this.date.fill(extractDateFormDateTime(transaction.date));
-    this.amount.fill(transaction.amount);
-    this.userId.fill(transaction.userId);
-    this.type.fill(transaction.type);
+    this.resetAll();
 
-    if (!transaction.items || transaction.items?.length === 0) return;
+    this.id.fill(transaction.id ?? 0);
+    this.date.fill(extractDateFromDateTime(transaction.date));
+    this.amount.fill(transaction.amount ?? 0);
+    this.userId.fill(transaction.userId ?? 0);
+    this.type.fill(transaction.type ?? 0);
+
+    if (!transaction.items || transaction.items?.length === 0) {
+      this.installments.fill([]);
+
+      return;
+    }
 
     const installments = [];
 

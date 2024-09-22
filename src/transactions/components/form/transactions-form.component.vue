@@ -3,55 +3,47 @@ import AppFormInputCurrency from "@/app/components/form/input-curreny/app-form-i
 import AppModal from "@/app/components/modal/app-modal.component.vue";
 import AppValidationMessages from "@/app/components/validation-messages/app-validation-messages.component.vue";
 import { Installment } from "@/installments/installment.model";
-import {
-  computed,
-  defineEmits,
-  defineExpose,
-  defineProps,
-  onMounted,
-  watch,
-  withDefaults,
-} from "vue";
+import { computed, defineEmits, defineExpose, onMounted } from "vue";
 import { TransactionsFormStrings as FormStrings } from "../../transactions.strings";
 import TransactionsFormInstallments from "./installments/transactions-form-installments.component.vue";
 import { TransactionsFormEventsService } from "./services/transactions-form-events.service";
 import { TransactionsFormService } from "./services/transactions-form.service";
 import { calculateAmountLimitByList } from "@/transactions/transactions.helpers";
-import { extractDateFormDateTime } from "@/app/helpers/helpers";
 import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
 import { Transaction } from "@/transactions/models/transaction.model";
-import { TransactionFormsOpenAction } from "@/transactions/transaction.types.ts";
+import { TransactionFormsOpenAction } from "@/transactions/transaction.types";
 
-type TransactionsFormPropsType = {
-  date?: string;
-  data?: TransactionBasicDto;
-};
 type TransactionsFormEmitsType = {
   (e: "onSave"): void;
   (e: "onClose"): void;
 };
 
-const props = withDefaults(defineProps<TransactionsFormPropsType>(), {
-  date: extractDateFormDateTime(new Date()),
-});
 const emits = defineEmits<TransactionsFormEmitsType>();
 
-const form = new TransactionsFormService(props.date);
+const form = new TransactionsFormService();
 const events = new TransactionsFormEventsService(form);
 
 const modalTitle = computed((): string => form.getModalTitle());
 
-const openForm: TransactionFormsOpenAction = async (id = 0): Promise<void> => {
+const openForm: TransactionFormsOpenAction = async (
+  data?: TransactionBasicDto
+): Promise<void> => {
+  form.resetState();
+
   form.show.value = true;
 
-  if (isNaN(id) || id === 0) {
-    form.editMode.value = false;
-    form.reset();
+  if (!data) return;
+
+  if (data.id > 0) {
+    await form.fillForByTransactionId(data.id);
 
     return;
   }
 
-  await form.fillForByTransactionId(id);
+  const transaction = Transaction.createFrom<TransactionBasicDto>(data);
+
+  form.editMode.value = false;
+  form.fields.populate(transaction);
 };
 const closeModal = (): void => {
   events.closeModalHandler();
@@ -73,27 +65,21 @@ const amoutLimit = computed((): number => {
 const onSearch = (appendData: boolean) => events.searchInstallments(appendData);
 const onSelectInstallments = (installments: Installment[]) =>
   events.validateIfAllowAddInstallments(installments);
-const save = (): void => {
-  form.submit();
+const save = async (): Promise<void> => {
+  await form.submit();
 
   emits("onSave");
 };
 
 onMounted(async (): Promise<void> => {
   await form.populateUsers();
-
-  if (props.data instanceof TransactionBasicDto) {
-    const transaction = Transaction.createFrom<TransactionBasicDto>(props.data);
-
-    form.fields.populate(transaction);
-  }
 });
 
 defineExpose({ openForm });
 </script>
 
 <template>
-  <slot :handler="openForm"></slot>
+  <slot :open-form="openForm"></slot>
 
   <AppModal
     :show="form.show.value"
@@ -157,7 +143,7 @@ defineExpose({ openForm });
             @change="events.userChangeHandler"
             v-model="form.fields.userId.model.value"
           >
-            <option :value="(0 as number)">...</option>
+            <option value="0">...</option>
 
             <template v-if="form.users.value.length > 0">
               <option

@@ -8,15 +8,23 @@ import {
   TransactionsFormStrings as FormStrings,
   TransactionsStoreStrings as StoreStrings,
 } from "../transactions.strings";
+import { TransactionBasicDto } from "../models/transaction-basic.dto";
 
 const form = ref<InstanceType<typeof TransactionForm> | null>(null);
+
+const formData = new TransactionBasicDto();
+formData.date = new Date();
 
 const transactions = computed(() =>
   StoreHelper.get<Transaction[]>(StoreStrings.getterTransactions.namespaced, [])
 );
 
-const editTransactionHandler = async (transactionId: number): Promise<void> =>
-  form.value?.openForm(transactionId);
+const editTransactionHandler = async (transactionId: number): Promise<void> => {
+  const data = new TransactionBasicDto();
+  data.id = transactionId;
+
+  form.value?.openForm(data);
+};
 const removeTransactionHandler = async (
   transactionId: number
 ): Promise<void> => {
@@ -37,8 +45,8 @@ onMounted(
   <div class="container-fluid">
     <div class="row">
       <div class="col-12 d-flex justify-content-end">
-        <TransactionForm ref="form" v-slot="{ handler }">
-          <button class="btn btn-primary" @click="handler">
+        <TransactionForm ref="form" v-slot="{ openForm }">
+          <button class="btn btn-primary" @click="openForm(formData)">
             {{ FormStrings.addTransaction }}
           </button>
         </TransactionForm>

@@ -40,8 +40,7 @@ export class TransactionsFormEventsService {
 
   public closeModalHandler(): void {
     this._form.resetState();
-    this._form.enableAll();
-    this._form.reset();
+
     StateService.clearInstallments();
   }
 

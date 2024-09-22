@@ -1,4 +1,4 @@
-import { extractDateFormDateTime } from "@/app/helpers/helpers";
+import { extractDateFromDateTime } from "@/app/helpers/helpers";
 import { FormField } from "@/app/services/form/form-field.model";
 import { FormFields } from "@/app/services/form/form-fields.model";
 import { ValidationRules as Rules } from "@/app/services/validation/validation-rules";
@@ -38,7 +38,7 @@ export class BalanceFormFields extends FormFields {
     );
     this.date = this.createFormFieldRequired<string>(
       BalancesResources.form.fields.date,
-      extractDateFormDateTime(new Date())
+      extractDateFromDateTime(new Date())
     );
     this.amount = this.createFormFieldRequired(
       BalancesResources.form.fields.amount,
@@ -75,7 +75,7 @@ export class BalanceFormFields extends FormFields {
     this.userId.model.value = balance.userId;
     this.name.model.value = balance.name;
     this.type.model.value = balance.type ?? 0;
-    this.date.model.value = extractDateFormDateTime(balance.date as Date);
+    this.date.model.value = extractDateFromDateTime(balance.date as Date);
     this.amount.model.value = balance.amount;
     this.financed.model.value = balance.financed;
     this.installmentsNumber.model.value = balance.installmentsNumber;

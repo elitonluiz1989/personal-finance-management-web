@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, inject, onMounted, reactive } from "vue";
+import { defineEmits, defineProps, inject } from "vue";
 import { Management } from "../../models/management.model";
 import ManagementItemHeader from "./management-item-header.component.vue";
 import ManagementItemContent from "./management-item-content.component.vue";
@@ -8,21 +8,30 @@ import { ManagementStrings as Strings } from "@/management/management.strings";
 import { TransactionsFormStrings } from "@/transactions/transactions.strings";
 import { ManagementService } from "@/management/management.service";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import TransactionForm from "@/transactions/components/form/transactions-form.component.vue";
 import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
+import { TransactionFormsOpenAction } from "@/transactions/transaction.types";
 
 type ManagementItemPropsType = {
   management: Management;
 };
 
-const props = defineProps<ManagementItemPropsType>();
-const service = inject<ManagementService>("ManagementService");
-const formData = reactive<TransactionBasicDto>(new TransactionBasicDto());
+type ManagementItemEmitsType = {
+  (e: "openForm", data: TransactionBasicDto): void;
+};
 
-onMounted(() => {
+const props = defineProps<ManagementItemPropsType>();
+const emits = defineEmits<ManagementItemEmitsType>();
+const service = inject<ManagementService>("ManagementService");
+
+const addTransaction = () => {
+  const formData = new TransactionBasicDto();
   formData.userId = props.management.user!.id;
   formData.date = service?.reference.value;
-});
+
+  emits("openForm", formData);
+};
+const editTransaction = (formData: TransactionBasicDto): void =>
+  emits("openForm", formData);
 </script>
 
 <template>
@@ -40,7 +49,11 @@ onMounted(() => {
         v-for="(item, index) in management.items"
         :key="index"
       >
-        <management-item-content :user-id="formData.userId" :content="item" />
+        <management-item-content
+          :user-id="props.management.user!.id"
+          :content="item"
+          @open-form="editTransaction"
+        />
       </tr>
 
       <tr class="border-bottom border-dark text-end">
@@ -49,19 +62,9 @@ onMounted(() => {
         </td>
 
         <td class="px-2 border-end border-dark text-center">
-          <TransactionForm
-            :data="formData"
-            @on-close="service?.save(formData.userId)"
-            v-slot="{ handler }"
-          >
-            <button
-              class="border-0 bg-transparent"
-              :title="TransactionsFormStrings.addTransaction"
-              @click="handler"
-            >
-              <FontAwesomeIcon icon="fa-regular fa-square-plus" />
-            </button>
-          </TransactionForm>
+          <button class="border-0 bg-transparent" @click="addTransaction">
+            <FontAwesomeIcon icon="fa-regular fa-square-plus" />
+          </button>
         </td>
       </tr>
     </tbody>

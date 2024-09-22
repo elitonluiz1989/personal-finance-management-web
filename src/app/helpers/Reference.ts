@@ -1,6 +1,6 @@
 import {
   createDateFromString,
-  extractDateFormDateTime,
+  extractDateFromDateTime,
   isDate,
   isValidDate,
 } from "./helpers";
@@ -71,7 +71,7 @@ export class Reference {
   }
 
   public toString(): string {
-    return extractDateFormDateTime(this._date);
+    return extractDateFromDateTime(this._date);
   }
 
   private monthHandler(date: Date): string {

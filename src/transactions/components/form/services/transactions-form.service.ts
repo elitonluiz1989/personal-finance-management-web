@@ -27,10 +27,10 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
   private _modalFooterConfig!: IAppModalFooterProps;
   private _page = 1;
 
-  constructor(date: string) {
+  constructor() {
     super();
 
-    this._formFields = new TransactionFormFields(date);
+    this._formFields = new TransactionFormFields();
     this._validateService = new ValidationService(this._formFields);
     this.disableComboxes();
   }
@@ -47,9 +47,14 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
 
   public resetState(): void {
     this.show.value = false;
-    this.editMode.value = false;
     this.modalTitle.value = FormStrings.insertTitle;
+    this.editMode.value = false;
+    this.allowAddInstallments.value = false;
+    this.amountLimit.value = 0;
     this.installmentsAmount.value = 0;
+
+    this.enableAll();
+    this.reset();
   }
 
   public updateAmountValues(): void {
@@ -63,9 +68,9 @@ export class TransactionsFormService extends FormService<TransactionFormFields> 
 
   public validateIfAllowAddInstallments(): void {
     this.allowAddInstallments.value =
-      this._formFields.amount.changed &&
-      this._formFields.userId.changed &&
-      this._formFields.type.changed &&
+      this._formFields.amount.value > 0 &&
+      this._formFields.userId.value > 0 &&
+      this._formFields.type.value > 0 &&
       this.amountLimit.value > 0;
   }
 
