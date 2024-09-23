@@ -4,11 +4,13 @@ import { ManagementTotal } from "./management-total.model";
 import { IIndexable } from "@/app/types";
 import { mapFrom } from "@/app/helpers/helpers";
 import { ManagementStatusEnum } from "../management-status.enum";
+import { ManagementRemainingValue } from "./management-remaining-value.model";
 
 export class Management {
   public id = 0;
   public status: ManagementStatusEnum = ManagementStatusEnum.Unsaved;
   public user?: User;
+  public remainingValue: ManagementRemainingValue | undefined;
   public items: ManagementItem[] = [];
   public total: ManagementTotal | undefined;
 
@@ -22,6 +24,7 @@ export class Management {
     const management = new Management();
 
     Management.createUser<TData>(data, management);
+    Management.createRemaninigValue(data, management);
     Management.createItems<TData>(data, management);
     Management.createTotal<TData>(data, management);
 
@@ -39,6 +42,19 @@ export class Management {
     management.user = User.createFrom(data.user);
 
     delete data.user;
+  }
+
+  private static createRemaninigValue<TData extends IIndexable<any>>(
+    data: TData,
+    management: Management
+  ) {
+    if (!data.remainingValue) return;
+
+    management.remainingValue = ManagementRemainingValue.createFrom(
+      data.remainingValue
+    );
+
+    delete data.remainingValue;
   }
 
   private static createItems<TData extends IIndexable<any>>(

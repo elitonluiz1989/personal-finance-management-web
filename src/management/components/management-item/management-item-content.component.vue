@@ -48,7 +48,7 @@ onMounted((): void => {
   </td>
 
   <td :class="Helper.getAmountStyle(content.type)">
-    {{ Helper.formatAmount(content.amount?.valueFormatted, content.type) }}
+    {{ Helper.formatAmount(content.amount, content.type) }}
   </td>
 
   <td class="px-2 border-end border-dark text-center">

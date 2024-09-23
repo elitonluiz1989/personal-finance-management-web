@@ -259,7 +259,7 @@ export class CurrencyFormatter {
     this.setFormatter(locale, currencyCode);
   }
 
-  public format(value: number) {
+  public format(value: number): string {
     return this._formatter?.format(value) ?? value.toString();
   }
 

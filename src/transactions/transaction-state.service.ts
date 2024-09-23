@@ -38,6 +38,7 @@ export class TransactionStateService {
     filter.userId = fields.userId.value;
     filter.balanceType = fields.type.value;
     filter.reference = fields.reference?.numberValue;
+    filter.referenceAndBellow = true;
     filter.page = page;
     filter.appendData = true;
     filter.withoutPagination = false;

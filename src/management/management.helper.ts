@@ -1,15 +1,19 @@
 import { BalanceTypeEnum } from "@/balances/balances-type.enum";
 import { isNullOrWhiteSpace } from "@/app/helpers/helpers";
+import { Currency } from "./currency";
 
 export class ManagementHelper {
-  public static formatAmount(amount?: string, type?: BalanceTypeEnum): string {
-    if (isNullOrWhiteSpace(amount) || !type) {
+  public static formatAmount(
+    amount?: Currency,
+    type?: BalanceTypeEnum
+  ): string {
+    if (isNullOrWhiteSpace(amount?.valueFormatted) || !type) {
       return "0";
     }
 
     const sign = type === BalanceTypeEnum.credit ? "+" : "-";
 
-    return `${sign}${amount}`;
+    return `${sign}${amount?.valueFormatted}`;
   }
 
   public static getAmountStyle(type?: BalanceTypeEnum): string {

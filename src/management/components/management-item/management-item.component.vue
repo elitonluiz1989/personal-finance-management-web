@@ -3,13 +3,12 @@ import { defineEmits, defineProps, inject } from "vue";
 import { Management } from "../../models/management.model";
 import ManagementItemHeader from "./management-item-header.component.vue";
 import ManagementItemContent from "./management-item-content.component.vue";
-import ManagementItemTotal from "./management-item-total.component.vue";
 import { ManagementStrings as Strings } from "@/management/management.strings";
 import { TransactionsFormStrings } from "@/transactions/transactions.strings";
 import { ManagementService } from "@/management/management.service";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
-import { TransactionFormsOpenAction } from "@/transactions/transaction.types";
+import { ManagementHelper } from "@/management/management.helper";
 
 type ManagementItemPropsType = {
   management: Management;
@@ -18,7 +17,6 @@ type ManagementItemPropsType = {
 type ManagementItemEmitsType = {
   (e: "openForm", data: TransactionBasicDto): void;
 };
-
 const props = defineProps<ManagementItemPropsType>();
 const emits = defineEmits<ManagementItemEmitsType>();
 const service = inject<ManagementService>("ManagementService");
@@ -46,6 +44,28 @@ const editTransaction = (formData: TransactionBasicDto): void =>
     <tbody>
       <tr
         class="border-bottom border-dark text-end"
+        v-if="management.remainingValue"
+      >
+        <td class="px-2 border-end border-dark text-end" colspan="2">
+          {{ management.remainingValue.description }}
+        </td>
+
+        <td
+          :class="
+            ManagementHelper.getAmountStyle(management.remainingValue.type)
+          "
+        >
+          {{
+            ManagementHelper.formatAmount(
+              management.remainingValue.value,
+              management.remainingValue.type
+            )
+          }}
+        </td>
+      </tr>
+
+      <tr
+        class="border-bottom border-dark text-end"
         v-for="(item, index) in management.items"
         :key="index"
       >
@@ -70,10 +90,23 @@ const editTransaction = (formData: TransactionBasicDto): void =>
     </tbody>
 
     <tfoot>
-      <management-item-total
-        :total="management.total"
-        v-if="management.total"
-      />
+      <tr>
+        <td class="px-2 border-end border-dark text-end fw-bolder" colspan="2">
+          {{ Strings.total }}
+        </td>
+
+        <td
+          :class="ManagementHelper.getAmountStyle(management.total.type)"
+          v-if="management.total"
+        >
+          {{
+            ManagementHelper.formatAmount(
+              management.total.value,
+              management.total.type
+            )
+          }}
+        </td>
+      </tr>
     </tfoot>
   </table>
 

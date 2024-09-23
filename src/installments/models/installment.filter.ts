@@ -9,6 +9,7 @@ export class InstallmentFilter extends Filter {
   public transactionId = 0;
   public balanceType: BalanceTypeEnum | null = null;
   public reference: number | undefined = 0;
+  public referenceAndBellow = false;
   public number = 0;
   public status: InstallmentStatusEnum[] = [];
   public amount = 0;
