@@ -29,7 +29,6 @@ const openForm: TransactionFormsOpenAction = async (
   data?: TransactionBasicDto
 ): Promise<void> => {
   form.resetState();
-
   form.show.value = true;
 
   if (!data) return;

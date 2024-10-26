@@ -21,18 +21,13 @@ const reference = Reference.createOrDefault(props.reference, new Date());
 const service = new ManagementService(reference);
 
 const managements: ComputedRef<Management[]> = computed(service.getData);
-const allManagementsRecorded: ComputedRef<boolean> = computed(
-  () =>
-    managements.value.length !== 0 &&
-    managements.value.every((p) => p.isRecorded)
-);
 
 const openForm: TransactionFormsOpenAction = async (
   data?: TransactionBasicDto
 ): Promise<void> => await transactionForm.value?.openForm(data);
 const reload = async (): Promise<void> => await service.search();
 
-onMounted(async (): Promise<void> => await service.search());
+onMounted(async (): Promise<void> => await reload());
 </script>
 
 <template>
@@ -40,9 +35,7 @@ onMounted(async (): Promise<void> => await service.search());
     <div class="row pb-5">
       <management-actions
         :date="service.reference.stringValue"
-        :all-managements-record="allManagementsRecorded"
         @change-reference="(evt: Event) => service.onChangeReference(evt)"
-        @save="async () => await service.save()"
         @search="async () => await service.search()"
       />
     </div>
@@ -53,7 +46,11 @@ onMounted(async (): Promise<void> => await service.search());
         v-for="(management, index) in managements"
         :key="index"
       >
-        <management-item :management="management" @open-form="openForm" />
+        <management-item
+          :management="management"
+          :reference="reference"
+          @open-form="openForm"
+        />
       </div>
     </div>
 

@@ -9,9 +9,11 @@ import { ManagementService } from "@/management/management.service";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { TransactionBasicDto } from "@/transactions/models/transaction-basic.dto";
 import { ManagementHelper } from "@/management/management.helper";
+import { Reference } from "@/app/helpers/Reference";
 
 type ManagementItemPropsType = {
   management: Management;
+  reference: Reference;
 };
 
 type ManagementItemEmitsType = {
@@ -23,8 +25,8 @@ const service = inject<ManagementService>("ManagementService");
 
 const addTransaction = () => {
   const formData = new TransactionBasicDto();
-  formData.userId = props.management.user!.id;
-  formData.date = service?.reference.value;
+  formData.userId = props.management.user?.id ?? 0;
+  formData.date = props.reference?.value;
 
   emits("openForm", formData);
 };
